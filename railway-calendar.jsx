@@ -541,18 +541,205 @@ const RailwayDateAPI = {
 };
 
 // ============================================================================
+// SEASON ARTWORK
+// ============================================================================
+
+const svgToDataUrl = (svg) => 'data:image/svg+xml,' + encodeURIComponent(svg);
+
+const winterSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" fill="none">
+  <defs>
+    <linearGradient id="winterGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1B3F"/>
+      <stop offset="50%" stop-color="#0F325E"/>
+      <stop offset="100%" stop-color="#174777"/>
+    </linearGradient>
+    <radialGradient id="winterGlow" cx="70%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="#7CD4FF" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#7CD4FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="320" fill="url(#winterGradient)"/>
+  <circle cx="640" cy="70" r="38" fill="white" fill-opacity="0.85"/>
+  <circle cx="300" cy="180" r="180" fill="url(#winterGlow)" opacity="0.45"/>
+  <path d="M0 210 Q160 170 300 210 T600 200 T900 230 L900 320 L0 320 Z" fill="#0A1935"/>
+  <path d="M0 230 Q170 210 320 240 T620 230 T900 260 L900 320 L0 320 Z" fill="#0F2446"/>
+  <g stroke="#BEE9FF" stroke-width="3" stroke-linecap="round" opacity="0.85">
+    <path d="M150 70 l8 8 M150 78 l8 -8 M146 74 h16 M154 66 v16"/>
+    <path d="M90 110 l6 6 M90 116 l6 -6 M87 112 h12 M93 106 v12"/>
+    <path d="M480 50 l7 7 M480 57 l7 -7 M476 53 h14 M483 46 v14"/>
+    <path d="M700 120 l7 7 M700 127 l7 -7 M696 123 h14 M703 116 v14"/>
+    <path d="M360 90 l6 6 M360 96 l6 -6 M357 92 h12 M363 86 v12"/>
+  </g>
+  <g stroke="#E5F4FF" stroke-width="2" stroke-linecap="round" opacity="0.6">
+    <path d="M200 140 h18 M230 150 h14 M260 132 h12 M720 80 h18 M760 112 h12"/>
+    <path d="M420 110 h14 M450 128 h16 M520 90 h12 M560 140 h14"/>
+    <path d="M620 60 h12 M660 96 h14 M300 120 h18"/>
+  </g>
+</svg>`;
+
+const springSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" fill="none">
+  <defs>
+    <linearGradient id="springGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0F3C2E"/>
+      <stop offset="50%" stop-color="#1E7C4A"/>
+      <stop offset="100%" stop-color="#37A06A"/>
+    </linearGradient>
+    <radialGradient id="springGlow" cx="30%" cy="20%" r="60%">
+      <stop offset="0%" stop-color="#9BF6A7" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#9BF6A7" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="320" fill="url(#springGradient)"/>
+  <circle cx="180" cy="80" r="42" fill="#FFEFA1" opacity="0.9"/>
+  <circle cx="260" cy="170" r="180" fill="url(#springGlow)" opacity="0.35"/>
+  <path d="M0 230 Q160 190 320 230 T640 220 T900 250 L900 320 L0 320 Z" fill="#0E2F24"/>
+  <path d="M0 250 Q150 220 320 255 T620 245 T900 275 L900 320 L0 320 Z" fill="#134230"/>
+  <path d="M120 230 Q140 190 160 230 T200 230" stroke="#7FE4A9" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <path d="M520 225 Q540 185 560 225 T600 225" stroke="#7FE4A9" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <g fill="#DFF9E3">
+    <circle cx="200" cy="180" r="7"/><circle cx="215" cy="165" r="6"/><circle cx="230" cy="182" r="5"/>
+    <circle cx="560" cy="195" r="7"/><circle cx="575" cy="180" r="6"/><circle cx="590" cy="198" r="5"/>
+    <circle cx="340" cy="190" r="6"/><circle cx="355" cy="175" r="5"/><circle cx="370" cy="193" r="5"/>
+  </g>
+  <g stroke="#B3F4C9" stroke-width="2" opacity="0.8" stroke-linecap="round">
+    <path d="M260 210 l-10 24 M260 210 l10 24"/>
+    <path d="M600 205 l-10 24 M600 205 l10 24"/>
+    <path d="M720 215 l-9 20 M720 215 l9 20"/>
+  </g>
+</svg>`;
+
+const summerSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" fill="none">
+  <defs>
+    <linearGradient id="summerGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1C2E5A"/>
+      <stop offset="40%" stop-color="#27467A"/>
+      <stop offset="100%" stop-color="#F5A623"/>
+    </linearGradient>
+    <radialGradient id="summerGlow" cx="75%" cy="25%" r="55%">
+      <stop offset="0%" stop-color="#FFD876" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#FFD876" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="320" fill="url(#summerGradient)"/>
+  <circle cx="660" cy="80" r="70" fill="url(#summerGlow)"/>
+  <path d="M0 240 Q200 210 400 240 T800 230 T900 250 L900 320 L0 320 Z" fill="#122341"/>
+  <path d="M0 260 Q210 235 430 265 T840 255 T900 280 L900 320 L0 320 Z" fill="#1B3153"/>
+  <g stroke="#FFE8A3" stroke-width="4" stroke-linecap="round" opacity="0.85">
+    <path d="M660 10 v28"/>
+    <path d="M660 150 v28"/>
+    <path d="M580 80 h32"/>
+    <path d="M708 80 h32"/>
+    <path d="M600 32 l20 20"/>
+    <path d="M700 32 l-20 20"/>
+    <path d="M600 128 l20 -20"/>
+    <path d="M700 128 l-20 -20"/>
+  </g>
+  <g stroke="#8FD4FF" stroke-width="3" stroke-linecap="round" opacity="0.7">
+    <path d="M120 210 Q200 200 280 210" />
+    <path d="M140 230 Q220 220 300 230" />
+    <path d="M400 215 Q480 205 560 215" />
+    <path d="M420 235 Q500 225 580 235" />
+  </g>
+</svg>`;
+
+const autumnSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" fill="none">
+  <defs>
+    <linearGradient id="autumnGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2C1A1A"/>
+      <stop offset="45%" stop-color="#4A2A1B"/>
+      <stop offset="100%" stop-color="#C45D1E"/>
+    </linearGradient>
+    <radialGradient id="autumnGlow" cx="25%" cy="25%" r="55%">
+      <stop offset="0%" stop-color="#FFB774" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#FFB774" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="320" fill="url(#autumnGradient)"/>
+  <circle cx="200" cy="80" r="60" fill="url(#autumnGlow)"/>
+  <path d="M0 235 Q170 210 340 235 T680 225 T900 255 L900 320 L0 320 Z" fill="#1F1414"/>
+  <path d="M0 255 Q180 235 360 260 T700 245 T900 275 L900 320 L0 320 Z" fill="#2A1A15"/>
+  <g fill="#F7C08A" opacity="0.8">
+    <path d="M520 170 q18 -18 40 0 q-18 18 -40 0" />
+    <path d="M600 140 q18 -18 36 0 q-18 18 -36 0" />
+    <path d="M670 165 q16 -16 34 0 q-18 18 -34 0" />
+    <path d="M750 135 q16 -16 34 0 q-18 18 -34 0" />
+  </g>
+  <g fill="#F2994A" opacity="0.8">
+    <path d="M480 210 q-14 -34 12 -46 q26 12 12 46 q-14 34 -24 0" />
+    <path d="M560 195 q-12 -30 11 -40 q23 10 11 40 q-12 30 -22 0" />
+    <path d="M640 210 q-14 -32 12 -44 q26 12 12 44 q-14 32 -24 0" />
+  </g>
+  <g stroke="#F7C08A" stroke-width="3" stroke-linecap="round" opacity="0.7">
+    <path d="M130 120 q20 10 30 0" />
+    <path d="M160 150 q26 8 38 -2" />
+    <path d="M110 180 q22 12 36 0" />
+  </g>
+</svg>`;
+
+const seasonData = {
+  winter: {
+    name: 'Winter',
+    emoji: '❄️',
+    months: 'Dec — Feb',
+    description: 'Frosty mornings and long blue evenings over the network.',
+    badge: 'bg-cyan-500/15 text-cyan-200 border border-cyan-400/30',
+    image: svgToDataUrl(winterSvg)
+  },
+  spring: {
+    name: 'Spring',
+    emoji: '🌱',
+    months: 'Mar — May',
+    description: 'Bright greens, longer days, and blossoms by the sidings.',
+    badge: 'bg-emerald-500/15 text-emerald-100 border border-emerald-400/30',
+    image: svgToDataUrl(springSvg)
+  },
+  summer: {
+    name: 'Summer',
+    emoji: '☀️',
+    months: 'Jun — Aug',
+    description: 'Warm sunsets, bright skies, and long light evenings on the rails.',
+    badge: 'bg-amber-500/20 text-amber-100 border border-amber-400/30',
+    image: svgToDataUrl(summerSvg)
+  },
+  autumn: {
+    name: 'Autumn',
+    emoji: '🍂',
+    months: 'Sep — Nov',
+    description: 'Copper light, crisp air, and falling leaves along the line.',
+    badge: 'bg-orange-500/20 text-orange-100 border border-orange-400/30',
+    image: svgToDataUrl(autumnSvg)
+  }
+};
+
+const getSeasonInfo = (date) => {
+  const month = date.getMonth();
+  if (month >= 2 && month <= 4) return seasonData.spring;
+  if (month >= 5 && month <= 7) return seasonData.summer;
+  if (month >= 8 && month <= 10) return seasonData.autumn;
+  return seasonData.winter;
+};
+
+// ============================================================================
 // UI COMPONENTS
 // ============================================================================
 
 const RailwayCalendar = () => {
+  const normalizeDate = (value) => {
+    const d = new Date(value);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
   const [viewMode, setViewMode] = useState('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [animating, setAnimating] = useState(false);
   const [tooltip, setTooltip] = useState({ visible: false, content: '', x: 0, y: 0 });
+  const [selectedDate, setSelectedDate] = useState(() => normalizeDate(new Date()));
   
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const todayInfo = RailwayDateAPI.dateToRailway(today);
+  const selectedSeasonInfo = useMemo(() => getSeasonInfo(selectedDate), [selectedDate]);
   
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
@@ -580,8 +767,10 @@ const RailwayCalendar = () => {
   
   // Navigate to specific day in week view
   const goToDay = (date) => {
+    const normalized = normalizeDate(date);
+    setSelectedDate(normalized);
     animateTransition(() => {
-      setCurrentDate(new Date(date));
+      setCurrentDate(new Date(normalized));
       setViewMode('week');
     });
   };
@@ -617,7 +806,9 @@ const RailwayCalendar = () => {
   };
   
   const goToToday = () => {
-    animateTransition(() => setCurrentDate(new Date()));
+    const todayDate = normalizeDate(new Date());
+    setSelectedDate(todayDate);
+    animateTransition(() => setCurrentDate(new Date(todayDate)));
   };
   
   const jumpToRailwayWeek = (railwayYear, week) => {
@@ -806,6 +997,10 @@ const RailwayCalendar = () => {
               <div key={idx} className="flex flex-col items-center">
                 {/* Station marker */}
                 <div className={`w-6 h-6 rounded-full border-4 ${
+                  selectedDate && selectedDate.toDateString() === day.date.toDateString()
+                    ? 'ring-2 ring-indigo-400 ring-offset-2 ring-offset-slate-900'
+                    : ''
+                } ${
                   isToday(day.date) 
                     ? 'bg-cyan-400 border-cyan-300 shadow-lg shadow-cyan-500/50 animate-pulse' 
                     : day.isPayday
@@ -816,7 +1011,13 @@ const RailwayCalendar = () => {
                 }`}></div>
                 
                 {/* Day card */}
-                <div className={`mt-4 w-full p-4 rounded-xl backdrop-blur-xl border transition-all hover:scale-105 ${
+                <div
+                  onClick={() => setSelectedDate(normalizeDate(day.date))}
+                  className={`mt-4 w-full p-4 rounded-xl backdrop-blur-xl border transition-all hover:scale-105 cursor-pointer ${
+                  selectedDate && selectedDate.toDateString() === day.date.toDateString()
+                    ? 'outline outline-2 outline-indigo-400/70'
+                    : ''
+                  } ${
                   isToday(day.date)
                     ? 'bg-cyan-500/20 border-cyan-400/50 shadow-lg shadow-cyan-500/20'
                     : day.isPayday
@@ -1047,93 +1248,96 @@ const RailwayCalendar = () => {
                 </div>
                 
                 {/* Days */}
-                {week.map((day, di) => (
-                  <div
-                    key={di}
-                    onClick={() => goToDay(day.date)}
-                    onMouseEnter={(e) => showTooltip(e, `${day.date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}\n${day.isPayday ? '💰 PAYDAY! 💰' : day.moon.emoji + ' ' + day.moon.name}\n☀️ ${day.dayLight.dayLengthFormatted} (${day.dayLight.sunrise}–${day.dayLight.sunset})`)}
-                    onMouseLeave={hideTooltip}
-                    className={`group p-1.5 min-h-[75px] transition-all border-r border-white/5 last:border-0 cursor-pointer ${
-                      day.isCurrentMonth ? 'bg-white/[0.02]' : ''
-                    } ${isToday(day.date) ? 'ring-2 ring-inset ring-cyan-400' : ''} ${day.isPayday ? 'ring-2 ring-inset ring-amber-400' : ''} hover:bg-white/10 active:bg-white/15`}
-                  >
-                    <div className="flex flex-col h-full relative">
-                      {/* Payday sparkle background */}
-                      {day.isPayday && day.isCurrentMonth && (
-                        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
-                          <div className="absolute top-1 left-1 w-1 h-1 bg-yellow-300 rounded-full animate-ping" style={{ animationDuration: '3s' }}></div>
-                          <div className="absolute top-2 right-2 w-0.5 h-0.5 bg-amber-200 rounded-full animate-ping" style={{ animationDelay: '1s', animationDuration: '3s' }}></div>
-                          <div className="absolute bottom-1 left-3 w-0.5 h-0.5 bg-yellow-400 rounded-full animate-ping" style={{ animationDelay: '2s', animationDuration: '3s' }}></div>
+                {week.map((day, di) => {
+                  const isSelected = selectedDate && selectedDate.toDateString() === day.date.toDateString();
+                  return (
+                    <div
+                      key={di}
+                      onClick={() => goToDay(day.date)}
+                      onMouseEnter={(e) => showTooltip(e, `${day.date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}\n${day.isPayday ? '💰 PAYDAY! 💰' : day.moon.emoji + ' ' + day.moon.name}\n☀️ ${day.dayLight.dayLengthFormatted} (${day.dayLight.sunrise}–${day.dayLight.sunset})`)}
+                      onMouseLeave={hideTooltip}
+                      className={`group p-1.5 min-h-[75px] transition-all border-r border-white/5 last:border-0 cursor-pointer ${
+                        day.isCurrentMonth ? 'bg-white/[0.02]' : ''
+                      } ${isToday(day.date) ? 'ring-2 ring-inset ring-cyan-400' : ''} ${day.isPayday ? 'ring-2 ring-inset ring-amber-400' : ''} ${isSelected ? 'ring-2 ring-indigo-400 ring-offset-2 ring-offset-slate-900' : ''} hover:bg-white/10 active:bg-white/15`}
+                    >
+                      <div className="flex flex-col h-full relative">
+                        {/* Payday sparkle background */}
+                        {day.isPayday && day.isCurrentMonth && (
+                          <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+                            <div className="absolute top-1 left-1 w-1 h-1 bg-yellow-300 rounded-full animate-ping" style={{ animationDuration: '3s' }}></div>
+                            <div className="absolute top-2 right-2 w-0.5 h-0.5 bg-amber-200 rounded-full animate-ping" style={{ animationDelay: '1s', animationDuration: '3s' }}></div>
+                            <div className="absolute bottom-1 left-3 w-0.5 h-0.5 bg-yellow-400 rounded-full animate-ping" style={{ animationDelay: '2s', animationDuration: '3s' }}></div>
+                          </div>
+                        )}
+                        
+                        <div className="flex items-start justify-between">
+                          <div className={`text-sm font-medium ${
+                            isToday(day.date) 
+                              ? 'text-cyan-300' 
+                              : day.isPayday && day.isCurrentMonth
+                                ? 'text-amber-300'
+                              : day.isCurrentMonth 
+                                ? 'text-white' 
+                                : 'text-white/30'
+                          }`}>
+                            {day.date.getDate()}
+                          </div>
+                          {/* Icon - Payday or Moon Phase */}
+                          {day.isPayday && day.isCurrentMonth ? (
+                            <span 
+                              className="text-base animate-pulse"
+                              onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, '💰 PAYDAY! 💰'); }}
+                              onMouseLeave={hideTooltip}
+                            >
+                              💰
+                            </span>
+                          ) : (
+                            <span 
+                              className={`text-xs ${day.isCurrentMonth ? (day.moon.isSignificant ? 'opacity-90' : 'opacity-40') : 'opacity-20'}`}
+                              onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, `${day.moon.emoji} ${day.moon.name} (${day.moon.illumination}%)`); }}
+                              onMouseLeave={hideTooltip}
+                            >
+                              {day.moon.emoji}
+                            </span>
+                          )}
                         </div>
-                      )}
-                      
-                      <div className="flex items-start justify-between">
-                        <div className={`text-sm font-medium ${
-                          isToday(day.date) 
-                            ? 'text-cyan-300' 
-                            : day.isPayday && day.isCurrentMonth
-                              ? 'text-amber-300'
-                            : day.isCurrentMonth 
-                              ? 'text-white' 
-                              : 'text-white/30'
-                        }`}>
-                          {day.date.getDate()}
-                        </div>
-                        {/* Icon - Payday or Moon Phase */}
-                        {day.isPayday && day.isCurrentMonth ? (
-                          <span 
-                            className="text-base animate-pulse"
-                            onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, '💰 PAYDAY! 💰'); }}
+                        
+                        {/* Day Length Bar */}
+                        {!day.isPayday && (
+                          <div 
+                            className={`mt-1 h-1 w-full rounded-full overflow-hidden ${day.isCurrentMonth ? 'bg-slate-700' : 'bg-slate-800'}`}
+                            onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, `☀️ ${day.dayLight.dayLengthFormatted}\n🌅 ${day.dayLight.sunrise} → 🌇 ${day.dayLight.sunset}`); }}
                             onMouseLeave={hideTooltip}
                           >
-                            💰
-                          </span>
-                        ) : (
-                          <span 
-                            className={`text-xs ${day.isCurrentMonth ? (day.moon.isSignificant ? 'opacity-90' : 'opacity-40') : 'opacity-20'}`}
-                            onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, `${day.moon.emoji} ${day.moon.name} (${day.moon.illumination}%)`); }}
+                            <div 
+                              className={`h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full ${day.isCurrentMonth ? 'opacity-70' : 'opacity-30'}`}
+                              style={{ width: `${day.dayLight.dayLengthPercent}%` }}
+                            ></div>
+                          </div>
+                        )}
+                        
+                        {day.holiday && !day.isPayday && (
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); goToDay(day.date); }}
+                            onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, `${day.holiday.emoji} ${day.holiday.name}`); }}
                             onMouseLeave={hideTooltip}
+                            className="mt-1 text-[10px] text-rose-400 truncate flex items-center gap-0.5 hover:text-rose-300 cursor-pointer transition-all hover:scale-105 w-full"
                           >
-                            {day.moon.emoji}
-                          </span>
+                            <span>{day.holiday.emoji}</span>
+                            <span className="truncate">{day.holiday.name.split(' ')[0]}</span>
+                          </button>
+                        )}
+                        {isToday(day.date) && !day.isPayday && (
+                          <div className="mt-auto">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/30 text-cyan-300">
+                              TODAY
+                            </span>
+                          </div>
                         )}
                       </div>
-                      
-                      {/* Day Length Bar */}
-                      {!day.isPayday && (
-                        <div 
-                          className={`mt-1 h-1 w-full rounded-full overflow-hidden ${day.isCurrentMonth ? 'bg-slate-700' : 'bg-slate-800'}`}
-                          onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, `☀️ ${day.dayLight.dayLengthFormatted}\n🌅 ${day.dayLight.sunrise} → 🌇 ${day.dayLight.sunset}`); }}
-                          onMouseLeave={hideTooltip}
-                        >
-                          <div 
-                            className={`h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full ${day.isCurrentMonth ? 'opacity-70' : 'opacity-30'}`}
-                            style={{ width: `${day.dayLight.dayLengthPercent}%` }}
-                          ></div>
-                        </div>
-                      )}
-                      
-                      {day.holiday && !day.isPayday && (
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); goToDay(day.date); }}
-                          onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, `${day.holiday.emoji} ${day.holiday.name}`); }}
-                          onMouseLeave={hideTooltip}
-                          className="mt-1 text-[10px] text-rose-400 truncate flex items-center gap-0.5 hover:text-rose-300 cursor-pointer transition-all hover:scale-105 w-full"
-                        >
-                          <span>{day.holiday.emoji}</span>
-                          <span className="truncate">{day.holiday.name.split(' ')[0]}</span>
-                        </button>
-                      )}
-                      {isToday(day.date) && !day.isPayday && (
-                        <div className="mt-auto">
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/30 text-cyan-300">
-                            TODAY
-                          </span>
-                        </div>
-                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             );
           })}
@@ -1283,6 +1487,45 @@ const RailwayCalendar = () => {
               <div className="px-4 py-3 rounded-2xl bg-violet-500/10 border border-violet-500/30 backdrop-blur">
                 <div className="text-violet-400/70 text-xs uppercase tracking-wider">Railway Year</div>
                 <div className="text-violet-300 font-bold text-xl">{todayInfo.railwayYearDisplay}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Seasonal artwork */}
+          <div className="mt-6">
+            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-xl">
+              <img
+                src={selectedSeasonInfo.image}
+                alt={`${selectedSeasonInfo.name} illustration`}
+                className="w-full h-44 md:h-56 object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/25 to-black/60"></div>
+              <div className="absolute inset-0 p-4 md:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur ${selectedSeasonInfo.badge}`}>
+                    <span className="text-lg">{selectedSeasonInfo.emoji}</span>
+                    <span>{selectedSeasonInfo.name}</span>
+                  </div>
+                  <div className="text-xl md:text-2xl font-semibold text-white mt-2">Seasonal view</div>
+                  <p className="text-white/70 text-sm max-w-2xl">{selectedSeasonInfo.description}</p>
+                </div>
+                <div className="bg-white/10 border border-white/15 rounded-2xl px-4 py-3 backdrop-blur min-w-[200px] flex flex-col gap-1.5">
+                  <div className="text-white/60 text-xs uppercase tracking-wider">Selected Day</div>
+                  <div className="text-white font-semibold">
+                    {selectedDate.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
+                  </div>
+                  <div className="text-white/60 text-xs uppercase tracking-wider mt-2">Season Window</div>
+                  <div className="text-white font-semibold">{selectedSeasonInfo.months}</div>
+                  <div className="text-white/60 text-xs mt-1">Updates when you select a day</div>
+                  <button
+                    type="button"
+                    onClick={goToToday}
+                    className="mt-1 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-sm text-white transition-all"
+                  >
+                    Select today
+                  </button>
+                </div>
               </div>
             </div>
           </div>
