@@ -84,8 +84,12 @@
 
     <!-- Icon Components -->
     <script type="text/babel">
-        // Import React hooks
+        // Import React hooks and make them globally available
         const { useState, useMemo, useCallback, useEffect } = React;
+        window.useState = useState;
+        window.useMemo = useMemo;
+        window.useCallback = useCallback;
+        window.useEffect = useEffect;
 
         // Simple SVG icon wrapper component
         const Icon = ({ children, size = 24, ...props }) => (
@@ -206,6 +210,20 @@
                 <polyline points="16 5 12 9 8 5"></polyline>
             </Icon>
         );
+
+        // Make all icon components globally available
+        window.ChevronLeft = ChevronLeft;
+        window.ChevronRight = ChevronRight;
+        window.Calendar = Calendar;
+        window.Layers = Layers;
+        window.Clock = Clock;
+        window.Train = Train;
+        window.AlertCircle = AlertCircle;
+        window.Check = Check;
+        window.X = X;
+        window.Sun = Sun;
+        window.Sunrise = Sunrise;
+        window.Sunset = Sunset;
     </script>
 
     <!-- Load the Railway Calendar Component -->
