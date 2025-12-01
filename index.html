@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Railway Calendar Application - Network Rail's week numbering system with astronomical features">
+    <meta name="keywords" content="railway calendar, Network Rail, railway weeks, payday tracker, moon phases">
+    <meta name="author" content="Network Rail">
+
+    <title>Railway Calendar - Network Rail Week Numbering System</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚂</text></svg>">
+
+    <!-- React and ReactDOM from CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!-- Babel Standalone for JSX transpilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Basic reset and body styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: rgb(2, 6, 23);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        #root {
+            min-height: 100vh;
+        }
+
+        /* Loading spinner */
+        #loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: rgb(2, 6, 23);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(34, 211, 238, 0.1);
+            border-top-color: rgb(34, 211, 238);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            color: rgb(34, 211, 238);
+            font-size: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Root element for React -->
+    <div id="root">
+        <div id="loading">
+            <div style="text-align: center;">
+                <div class="spinner"></div>
+                <div class="loading-text">Loading Railway Calendar...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Icon Components -->
+    <script type="text/babel">
+        // Import React hooks
+        const { useState, useMemo, useCallback, useEffect } = React;
+
+        // Simple SVG icon wrapper component
+        const Icon = ({ children, size = 24, ...props }) => (
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width={size}
+                height={size}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                {...props}
+            >
+                {children}
+            </svg>
+        );
+
+        // Icon components matching lucide-react icons
+        const ChevronLeft = (props) => (
+            <Icon {...props}><polyline points="15 18 9 12 15 6"></polyline></Icon>
+        );
+
+        const ChevronRight = (props) => (
+            <Icon {...props}><polyline points="9 18 15 12 9 6"></polyline></Icon>
+        );
+
+        const Calendar = (props) => (
+            <Icon {...props}>
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+            </Icon>
+        );
+
+        const Layers = (props) => (
+            <Icon {...props}>
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+            </Icon>
+        );
+
+        const Clock = (props) => (
+            <Icon {...props}>
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </Icon>
+        );
+
+        const Train = (props) => (
+            <Icon {...props}>
+                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                <path d="M4 11h16"></path>
+                <path d="M12 4v7"></path>
+                <path d="M8 20l-2 2"></path>
+                <path d="M16 20l2 2"></path>
+            </Icon>
+        );
+
+        const AlertCircle = (props) => (
+            <Icon {...props}>
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </Icon>
+        );
+
+        const Check = (props) => (
+            <Icon {...props}><polyline points="20 6 9 17 4 12"></polyline></Icon>
+        );
+
+        const X = (props) => (
+            <Icon {...props}>
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </Icon>
+        );
+
+        const Sun = (props) => (
+            <Icon {...props}>
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </Icon>
+        );
+
+        const Sunrise = (props) => (
+            <Icon {...props}>
+                <path d="M17 18a5 5 0 0 0-10 0"></path>
+                <line x1="12" y1="2" x2="12" y2="9"></line>
+                <line x1="4.22" y1="10.22" x2="5.64" y2="11.64"></line>
+                <line x1="1" y1="18" x2="3" y2="18"></line>
+                <line x1="21" y1="18" x2="23" y2="18"></line>
+                <line x1="18.36" y1="11.64" x2="19.78" y2="10.22"></line>
+                <line x1="23" y1="22" x2="1" y2="22"></line>
+                <polyline points="8 6 12 2 16 6"></polyline>
+            </Icon>
+        );
+
+        const Sunset = (props) => (
+            <Icon {...props}>
+                <path d="M17 18a5 5 0 0 0-10 0"></path>
+                <line x1="12" y1="9" x2="12" y2="2"></line>
+                <line x1="4.22" y1="10.22" x2="5.64" y2="11.64"></line>
+                <line x1="1" y1="18" x2="3" y2="18"></line>
+                <line x1="21" y1="18" x2="23" y2="18"></line>
+                <line x1="18.36" y1="11.64" x2="19.78" y2="10.22"></line>
+                <line x1="23" y1="22" x2="1" y2="22"></line>
+                <polyline points="16 5 12 9 8 5"></polyline>
+            </Icon>
+        );
+    </script>
+
+    <!-- Load the Railway Calendar Component -->
+    <script type="text/babel" src="railway-calendar.jsx"></script>
+
+    <!-- Mount the application -->
+    <script type="text/babel">
+        // Wait for DOM to be ready
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<RailwayCalendar />);
+    </script>
+
+    <!-- Analytics placeholder (add your analytics code here if needed) -->
+    <!-- <script>
+        // Google Analytics or other tracking code
+    </script> -->
+</body>
+</html>

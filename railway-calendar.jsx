@@ -1,5 +1,9 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, Layers, Clock, Train, AlertCircle, Check, X, Sun, Sunrise, Sunset } from 'lucide-react';
+// NOTE: React hooks and Lucide icons are provided by the index.html file
+// The following imports are commented out for browser compatibility:
+// import React, { useState, useMemo, useCallback, useEffect } from 'react';
+// import { ChevronLeft, ChevronRight, Calendar, Layers, Clock, Train, AlertCircle, Check, X, Sun, Sunrise, Sunset } from 'lucide-react';
+
+// These are loaded globally from CDN in index.html
 
 // ============================================================================
 // RAILWAY DATE API MODULE
@@ -1667,4 +1671,6 @@ const RailwayCalendar = () => {
   );
 };
 
-export default RailwayCalendar;
+// Make component available globally for browser usage
+// export default RailwayCalendar; // Commented for browser compatibility
+window.RailwayCalendar = RailwayCalendar;
