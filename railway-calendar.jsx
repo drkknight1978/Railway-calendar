@@ -4,6 +4,22 @@
 // import { ChevronLeft, ChevronRight, Calendar, Layers, Clock, Train, AlertCircle, Check, X, Sun, Sunrise, Sunset } from 'lucide-react';
 
 // These are loaded globally from CDN in index.html
+// Destructure React hooks from the global React object
+const { useState, useMemo, useCallback, useEffect } = React;
+
+// Icon components are available from window object (defined in index.html)
+const ChevronLeft = window.ChevronLeft;
+const ChevronRight = window.ChevronRight;
+const Calendar = window.Calendar;
+const Layers = window.Layers;
+const Clock = window.Clock;
+const Train = window.Train;
+const AlertCircle = window.AlertCircle;
+const Check = window.Check;
+const X = window.X;
+const Sun = window.Sun;
+const Sunrise = window.Sunrise;
+const Sunset = window.Sunset;
 
 // ============================================================================
 // RAILWAY DATE API MODULE
