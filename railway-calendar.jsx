@@ -1,7 +1,7 @@
 // NOTE: React hooks and Lucide icons are provided by the index.html file
 // The following imports are commented out for browser compatibility:
 // import React, { useState, useMemo, useCallback, useEffect } from 'react';
-// import { ChevronLeft, ChevronRight, Calendar, Layers, Clock, Train, AlertCircle, Check, X, Sun, Sunrise, Sunset } from 'lucide-react';
+// import { ChevronLeft, ChevronRight, Calendar, Layers, Clock, Train, Sun, Sunrise, Sunset } from 'lucide-react';
 
 // These are loaded globally from CDN in index.html
 // Destructure React hooks from the global React object
@@ -14,9 +14,6 @@ const Calendar = window.Calendar;
 const Layers = window.Layers;
 const Clock = window.Clock;
 const Train = window.Train;
-const AlertCircle = window.AlertCircle;
-const Check = window.Check;
-const X = window.X;
 const Sun = window.Sun;
 const Sunrise = window.Sunrise;
 const Sunset = window.Sunset;
@@ -544,175 +541,12 @@ const RailwayDateAPI = {
 };
 
 // ============================================================================
-// UNIT TESTS
-// ============================================================================
-
-const runTests = () => {
-  const results = [];
-  
-  // Test 1: Week 1 starts on first Saturday on or after April 1
-  const test1Year = 2025;
-  const week1Start2025 = RailwayDateAPI.getWeekOneStart(test1Year);
-  results.push({
-    name: "2025 Week 1 starts April 5 (first Sat on/after Apr 1)",
-    passed: week1Start2025.getDate() === 5 && week1Start2025.getMonth() === 3,
-    expected: "2025-04-05",
-    actual: week1Start2025.toISOString().split('T')[0]
-  });
-  
-  // Test 2: April 1 2023 was a Saturday, so Week 1 = April 1
-  const week1Start2023 = RailwayDateAPI.getWeekOneStart(2023);
-  results.push({
-    name: "2023 Week 1 starts April 1 (Apr 1 is Saturday)",
-    passed: week1Start2023.getDate() === 1 && week1Start2023.getMonth() === 3,
-    expected: "2023-04-01",
-    actual: week1Start2023.toISOString().split('T')[0]
-  });
-  
-  // Test 3: Date to railway conversion
-  const testDate = new Date(2025, 3, 5); // April 5, 2025
-  const railInfo = RailwayDateAPI.dateToRailway(testDate);
-  results.push({
-    name: "April 5 2025 = RY 2025/26 Week 1 Day 1",
-    passed: railInfo.railwayYear === 2025 && railInfo.railWeek === 1 && railInfo.dayOfRailWeek === 1,
-    expected: "RY2025 W1 D1",
-    actual: `RY${railInfo.railwayYear} W${railInfo.railWeek} D${railInfo.dayOfRailWeek}`
-  });
-  
-  // Test 4: Date before railway year starts belongs to previous year
-  const marchDate = new Date(2025, 2, 31); // March 31, 2025
-  const marchInfo = RailwayDateAPI.dateToRailway(marchDate);
-  results.push({
-    name: "March 31 2025 belongs to RY 2024/25",
-    passed: marchInfo.railwayYear === 2024,
-    expected: "RY2024",
-    actual: `RY${marchInfo.railwayYear}`
-  });
-  
-  // Test 5: Railway to date range conversion
-  const { startDate, endDate } = RailwayDateAPI.railwayToDateRange(2025, 1);
-  results.push({
-    name: "RY 2025 Week 1 = Apr 5-11, 2025",
-    passed: startDate.getDate() === 5 && endDate.getDate() === 11,
-    expected: "Apr 5-11",
-    actual: `Apr ${startDate.getDate()}-${endDate.getDate()}`
-  });
-  
-  // Test 6: Total weeks calculation (52 or 53)
-  const totalWeeks2025 = RailwayDateAPI.getTotalWeeks(2025);
-  results.push({
-    name: "2025/26 has 52 or 53 weeks",
-    passed: totalWeeks2025 === 52 || totalWeeks2025 === 53,
-    expected: "52 or 53",
-    actual: totalWeeks2025.toString()
-  });
-  
-  // Test 7: Period calculation
-  const week5Info = RailwayDateAPI.dateToRailway(new Date(2025, 4, 3)); // Early May 2025
-  results.push({
-    name: "Week 5 is in Period 2",
-    passed: week5Info.period === 2,
-    expected: "Period 2",
-    actual: `Period ${week5Info.period}`
-  });
-  
-  // Test 8: Day names correct
-  const fridayDate = new Date(2025, 3, 11); // April 11, 2025 (Friday)
-  const fridayInfo = RailwayDateAPI.dateToRailway(fridayDate);
-  results.push({
-    name: "Day 7 of rail week is Friday",
-    passed: fridayInfo.dayOfRailWeek === 7 && fridayInfo.dayName === 'Friday',
-    expected: "Day 7 = Friday",
-    actual: `Day ${fridayInfo.dayOfRailWeek} = ${fridayInfo.dayName}`
-  });
-  
-  // Test 9: Moon phase calculation - known full moon (Jan 13, 2025)
-  const fullMoonDate = new Date(2025, 0, 13);
-  const fullMoonPhase = RailwayDateAPI.getMoonPhase(fullMoonDate);
-  results.push({
-    name: "Jan 13, 2025 is near Full Moon",
-    passed: fullMoonPhase.phase === 4 || fullMoonPhase.phase === 3 || fullMoonPhase.phase === 5,
-    expected: "Full Moon (phase 4) ±1",
-    actual: `${fullMoonPhase.name} (phase ${fullMoonPhase.phase})`
-  });
-  
-  // Test 10: Moon phase calculation - known new moon (Jan 29, 2025)
-  const newMoonDate = new Date(2025, 0, 29);
-  const newMoonPhase = RailwayDateAPI.getMoonPhase(newMoonDate);
-  results.push({
-    name: "Jan 29, 2025 is near New Moon",
-    passed: newMoonPhase.phase === 0 || newMoonPhase.phase === 7 || newMoonPhase.phase === 1,
-    expected: "New Moon (phase 0) ±1",
-    actual: `${newMoonPhase.name} (phase ${newMoonPhase.phase})`
-  });
-  
-  // Test 11: Moon illumination ranges from 0-100
-  const randomMoon = RailwayDateAPI.getMoonPhase(new Date(2025, 5, 15));
-  results.push({
-    name: "Moon illumination is 0-100%",
-    passed: randomMoon.illumination >= 0 && randomMoon.illumination <= 100,
-    expected: "0-100%",
-    actual: `${randomMoon.illumination}%`
-  });
-  
-  // Test 12: Day length - Summer solstice (June 21) has longest day ~16.5h
-  const summerSolstice = RailwayDateAPI.getDayLength(new Date(2025, 5, 21));
-  results.push({
-    name: "Summer solstice ~16-17h daylight",
-    passed: summerSolstice.dayLengthHours >= 16 && summerSolstice.dayLengthHours <= 17,
-    expected: "16-17 hours",
-    actual: `${summerSolstice.dayLengthFormatted}`
-  });
-  
-  // Test 13: Day length - Winter solstice (Dec 21) has shortest day ~7.5h
-  const winterSolstice = RailwayDateAPI.getDayLength(new Date(2025, 11, 21));
-  results.push({
-    name: "Winter solstice ~7-8h daylight",
-    passed: winterSolstice.dayLengthHours >= 7 && winterSolstice.dayLengthHours <= 8.5,
-    expected: "7-8.5 hours",
-    actual: `${winterSolstice.dayLengthFormatted}`
-  });
-  
-  // Test 14: Day length - Equinox (March 20) has ~12h daylight
-  const equinox = RailwayDateAPI.getDayLength(new Date(2025, 2, 20));
-  results.push({
-    name: "Spring equinox ~12h daylight",
-    passed: equinox.dayLengthHours >= 11.5 && equinox.dayLengthHours <= 12.5,
-    expected: "11.5-12.5 hours",
-    actual: `${equinox.dayLengthFormatted}`
-  });
-  
-  // Test 15: Sunrise/Sunset are valid times
-  const anyDay = RailwayDateAPI.getDayLength(new Date(2025, 6, 15));
-  const sunriseValid = /^\d{2}:\d{2}$/.test(anyDay.sunrise);
-  const sunsetValid = /^\d{2}:\d{2}$/.test(anyDay.sunset);
-  results.push({
-    name: "Sunrise/Sunset times are valid format",
-    passed: sunriseValid && sunsetValid,
-    expected: "HH:MM format",
-    actual: `${anyDay.sunrise} / ${anyDay.sunset}`
-  });
-  
-  // Test 16: Days getting longer after winter solstice
-  const afterWinterSolstice = RailwayDateAPI.getDayLength(new Date(2025, 0, 15)); // Jan 15
-  results.push({
-    name: "Days getting longer in January",
-    passed: afterWinterSolstice.daysGettingLonger === true,
-    expected: "Days getting longer",
-    actual: afterWinterSolstice.daysGettingLonger ? "Getting longer" : "Getting shorter"
-  });
-  
-  return results;
-};
-
-// ============================================================================
 // UI COMPONENTS
 // ============================================================================
 
 const RailwayCalendar = () => {
   const [viewMode, setViewMode] = useState('month');
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [showTests, setShowTests] = useState(false);
   const [animating, setAnimating] = useState(false);
   const [tooltip, setTooltip] = useState({ visible: false, content: '', x: 0, y: 0 });
   
@@ -1405,59 +1239,6 @@ const RailwayCalendar = () => {
   };
 
   // ============================================================================
-  // TEST RESULTS PANEL
-  // ============================================================================
-  
-  const TestPanel = () => {
-    const testResults = useMemo(() => runTests(), []);
-    const allPassed = testResults.every(t => t.passed);
-    
-    return (
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowTests(false)}>
-        <div className="bg-slate-900 rounded-2xl border border-white/20 max-w-2xl w-full max-h-[80vh] overflow-hidden" onClick={e => e.stopPropagation()}>
-          <div className="p-4 border-b border-white/10 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <AlertCircle className={allPassed ? 'text-emerald-400' : 'text-amber-400'} />
-              <h3 className="text-white font-semibold">API Unit Tests</h3>
-            </div>
-            <button onClick={() => setShowTests(false)} className="text-white/50 hover:text-white">
-              <X size={20} />
-            </button>
-          </div>
-          
-          <div className="p-4 overflow-y-auto max-h-[60vh]">
-            <div className="space-y-3">
-              {testResults.map((test, i) => (
-                <div key={i} className={`p-3 rounded-xl ${test.passed ? 'bg-emerald-500/10 border border-emerald-500/30' : 'bg-red-500/10 border border-red-500/30'}`}>
-                  <div className="flex items-start gap-3">
-                    {test.passed ? (
-                      <Check className="text-emerald-400 flex-shrink-0 mt-0.5" size={18} />
-                    ) : (
-                      <X className="text-red-400 flex-shrink-0 mt-0.5" size={18} />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="text-white text-sm font-medium">{test.name}</div>
-                      <div className="text-white/50 text-xs mt-1">
-                        Expected: {test.expected} | Actual: {test.actual}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="p-4 border-t border-white/10 bg-white/5">
-            <div className={`text-center font-medium ${allPassed ? 'text-emerald-400' : 'text-amber-400'}`}>
-              {allPassed ? '✓ All tests passed' : `⚠ ${testResults.filter(t => !t.passed).length} test(s) failed`}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // ============================================================================
   // MAIN RENDER
   // ============================================================================
   
@@ -1648,24 +1429,13 @@ const RailwayCalendar = () => {
           {viewMode === 'year' && <YearView />}
         </main>
         
-        {/* Footer with API Test Button */}
-        <footer className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-white/10">
-          <div className="text-white/40 text-sm">
+        <footer className="mt-8 pt-6 border-t border-white/10">
+          <div className="text-white/40 text-sm text-center sm:text-left">
             Week 1 starts on first Saturday on or after 1 April • Weeks run Saturday–Friday • 4 weeks per period
           </div>
-          <button
-            onClick={() => setShowTests(true)}
-            className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 transition-all text-sm flex items-center gap-2"
-          >
-            <AlertCircle size={16} />
-            Run API Tests
-          </button>
         </footer>
       </div>
-      
-      {/* Test Panel Modal */}
-      {showTests && <TestPanel />}
-      
+
       {/* Tooltip */}
       <div 
         className={`fixed z-50 pointer-events-none transition-all duration-150 ${
