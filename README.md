@@ -222,11 +222,11 @@ Railway-calendar/
 
 ## License
 
-Created for Network Rail personnel use.
+Created by Colin McLaren and with AI..
 
 ## Version History
 
-**v1.0** - Initial release (December 2024)
+**v1.0** - Initial release (November 2025)
 - Railway week calculation system
 - Three view modes (Week/Month/Year)
 - Moon phase integration
