@@ -1675,6 +1675,7 @@ const RailwayCalendar = () => {
         <footer className="mt-8 pt-6 border-t border-white/10">
           <div className="text-white/40 text-sm text-center sm:text-left">
             Week 1 starts on first Saturday on or after 1 April • Weeks run Saturday–Friday • 4 weeks per period
+            © Colin McLaren - 2025
           </div>
         </footer>
       </div>
