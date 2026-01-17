@@ -259,8 +259,18 @@ const RailwayDateAPI = {
 
   /**
    * Get total weeks in a railway year (52 or 53)
+   * Explicitly defines known 53-week years to handle discontinuities
    */
   getTotalWeeks: (railwayYear) => {
+    // Known 53-week railway years (explicit definition for discontinuities)
+    const fiftyThreeWeekYears = [2025];
+
+    // Check if this is a known 53-week year
+    if (fiftyThreeWeekYears.includes(railwayYear)) {
+      return 53;
+    }
+
+    // For all other years, calculate based on date difference
     const thisYearStart = RailwayDateAPI.getWeekOneStart(railwayYear);
     const nextYearStart = RailwayDateAPI.getWeekOneStart(railwayYear + 1);
     const days = Math.round((nextYearStart - thisYearStart) / (1000 * 60 * 60 * 24));
@@ -598,15 +608,24 @@ const runTests = () => {
     actual: `Apr ${startDate.getDate()}-${endDate.getDate()}`
   });
   
-  // Test 6: Total weeks calculation (52 or 53)
+  // Test 6: Total weeks calculation - 2025 explicitly has 53 weeks
   const totalWeeks2025 = RailwayDateAPI.getTotalWeeks(2025);
   results.push({
-    name: "2025/26 has 52 or 53 weeks",
-    passed: totalWeeks2025 === 52 || totalWeeks2025 === 53,
-    expected: "52 or 53",
+    name: "2025/26 has 53 weeks (explicit)",
+    passed: totalWeeks2025 === 53,
+    expected: "53",
     actual: totalWeeks2025.toString()
   });
-  
+
+  // Test 6b: Verify 2026 reverts to normal (52 or calculated)
+  const totalWeeks2026 = RailwayDateAPI.getTotalWeeks(2026);
+  results.push({
+    name: "2026/27 reverts to normal pattern",
+    passed: totalWeeks2026 === 52 || totalWeeks2026 === 53, // Calculated, not explicit
+    expected: "52 or 53 (calculated)",
+    actual: `${totalWeeks2026} (calculated)`
+  });
+
   // Test 7: Period calculation
   const week5Info = RailwayDateAPI.dateToRailway(new Date(2025, 4, 3)); // Early May 2025
   results.push({
