@@ -243,13 +243,13 @@ const RailwayDateAPI = {
     // Get the last day of March (March 31st)
     const lastDayOfMarch = new Date(railwayYear, 2, 31); // Month 2 = March
     const dayOfWeek = lastDayOfMarch.getDay(); // 0=Sun, 6=Sat
-    
+
     // Calculate days to go back to reach Saturday
     // If March 31st is Saturday (6), go back 0 days
     // If March 31st is Sunday (0), go back 1 day to Saturday
     // If March 31st is Monday (1), go back 2 days to Saturday, etc.
     const daysToGoBack = (dayOfWeek + 1) % 7;
-    
+
     const lastSaturday = new Date(railwayYear, 2, 31 - daysToGoBack);
     return lastSaturday;
   },
@@ -288,26 +288,38 @@ const RailwayDateAPI = {
   dateToRailway: (date) => {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
-    
+
     // Determine which railway year this date belongs to
-    let railwayYear = d.getFullYear();
+    // Start by checking the previous calendar year first (important for 53-week years)
+    let railwayYear = d.getFullYear() - 1;
     let weekOneStart = RailwayDateAPI.getWeekOneStart(railwayYear);
-    
-    // If date is before this calendar year's Week 1, it belongs to previous railway year
-    if (d < weekOneStart) {
-      railwayYear--;
-      weekOneStart = RailwayDateAPI.getWeekOneStart(railwayYear);
+    let totalWeeks = RailwayDateAPI.getTotalWeeks(railwayYear);
+    let yearEnd = new Date(weekOneStart);
+    yearEnd.setDate(yearEnd.getDate() + (totalWeeks * 7) - 1);
+
+    // Check if date falls within previous railway year
+    if (d >= weekOneStart && d <= yearEnd) {
+      // Date belongs to previous railway year
     } else {
-      // Check if we've rolled into next railway year
-      const nextYearStart = RailwayDateAPI.getWeekOneStart(railwayYear + 1);
-      if (d >= nextYearStart) {
-        railwayYear++;
-        weekOneStart = nextYearStart;
+      // Try current calendar year
+      railwayYear = d.getFullYear();
+      weekOneStart = RailwayDateAPI.getWeekOneStart(railwayYear);
+      totalWeeks = RailwayDateAPI.getTotalWeeks(railwayYear);
+      yearEnd = new Date(weekOneStart);
+      yearEnd.setDate(yearEnd.getDate() + (totalWeeks * 7) - 1);
+
+      // Check if date falls within current railway year
+      if (d >= weekOneStart && d <= yearEnd) {
+        // Date belongs to current railway year
+      } else {
+        // Must be in next railway year
+        railwayYear = d.getFullYear() + 1;
+        weekOneStart = RailwayDateAPI.getWeekOneStart(railwayYear);
       }
     }
     
-    // Calculate days since Week 1 start
-    const daysDiff = Math.floor((d - weekOneStart) / (1000 * 60 * 60 * 24));
+    // Calculate days since Week 1 start (use Math.round to handle DST transitions)
+    const daysDiff = Math.round((d - weekOneStart) / (1000 * 60 * 60 * 24));
     
     // Rail week (1-indexed)
     const railWeek = Math.floor(daysDiff / 7) + 1;
