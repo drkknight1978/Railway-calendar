@@ -342,7 +342,6 @@ const RailwayDateAPI = {
       period,
       weekInPeriod,
       totalWeeks,
-      weekOneStart,
       dayName: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'][dayOfRailWeek - 1],
       railwayYearDisplay: `${railwayYear}/${(railwayYear + 1).toString().slice(-2)}`
     };
