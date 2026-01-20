@@ -236,22 +236,22 @@ const RailwayDateAPI = {
   },
 
   /**
-   * Get the last Saturday of March for a given railway year
+   * Get the first Saturday on or after April 1st for a given railway year
    * This is Week 1 Day 1 of that railway year
    */
   getWeekOneStart: (railwayYear) => {
-    // Get the last day of March (March 31st)
-    const lastDayOfMarch = new Date(railwayYear, 2, 31); // Month 2 = March
-    const dayOfWeek = lastDayOfMarch.getDay(); // 0=Sun, 6=Sat
+    // Start with April 1st
+    const april1 = new Date(railwayYear, 3, 1); // Month 3 = April
+    const dayOfWeek = april1.getDay(); // 0=Sun, 6=Sat
 
-    // Calculate days to go back to reach Saturday
-    // If March 31st is Saturday (6), go back 0 days
-    // If March 31st is Sunday (0), go back 1 day to Saturday
-    // If March 31st is Monday (1), go back 2 days to Saturday, etc.
-    const daysToGoBack = (dayOfWeek + 1) % 7;
+    // Calculate days to add to reach the next Saturday (or 0 if already Saturday)
+    // If April 1st is Saturday (6), add 0 days
+    // If April 1st is Sunday (0), add 6 days
+    // If April 1st is Monday (1), add 5 days, etc.
+    const daysToAdd = dayOfWeek === 6 ? 0 : (6 - dayOfWeek + 7) % 7;
 
-    const lastSaturday = new Date(railwayYear, 2, 31 - daysToGoBack);
-    return lastSaturday;
+    const firstSaturday = new Date(railwayYear, 3, 1 + daysToAdd);
+    return firstSaturday;
   },
 
   /**
@@ -326,15 +326,19 @@ const RailwayDateAPI = {
     
     // Day of rail week (1=Sat, 7=Fri)
     const dayOfRailWeek = (daysDiff % 7) + 1;
-    
-    // Period (4 weeks each, 13 periods)
-    const period = Math.ceil(railWeek / 4);
-    
-    // Week within period (1-4)
-    const weekInPeriod = ((railWeek - 1) % 4) + 1;
-    
-    const totalWeeks = RailwayDateAPI.getTotalWeeks(railwayYear);
-    
+
+    // Period (4 weeks each, always 13 periods max)
+    // Week 53 should be in period 13 (making it a 5-week period)
+    const period = Math.min(Math.ceil(railWeek / 4), 13);
+
+    // Week within period
+    // Calculate based on the period's start week
+    const periodStartWeek = (period - 1) * 4 + 1;
+    const weekInPeriod = railWeek - periodStartWeek + 1;
+
+    // Recalculate totalWeeks for the final determined railway year
+    totalWeeks = RailwayDateAPI.getTotalWeeks(railwayYear);
+
     return {
       railwayYear,
       railWeek,
@@ -363,14 +367,18 @@ const RailwayDateAPI = {
 
   /**
    * Get period start and end dates for a railway year
+   * Note: There are always 13 periods. In a 53-week year, Period 13 has 5 weeks instead of 4.
    */
   getPeriodDates: (railwayYear, period) => {
+    const totalWeeks = RailwayDateAPI.getTotalWeeks(railwayYear);
     const startWeek = (period - 1) * 4 + 1;
-    const endWeek = Math.min(period * 4, RailwayDateAPI.getTotalWeeks(railwayYear));
-    
+
+    // For period 13, always go to the last week of the year (52 or 53)
+    const endWeek = period === 13 ? totalWeeks : Math.min(period * 4, totalWeeks);
+
     const { startDate } = RailwayDateAPI.railwayToDateRange(railwayYear, startWeek);
     const { endDate } = RailwayDateAPI.railwayToDateRange(railwayYear, endWeek);
-    
+
     return { startDate, endDate, startWeek, endWeek };
   },
 
@@ -1381,7 +1389,8 @@ const RailwayCalendar = () => {
   const YearView = () => {
     const railwayYear = currentInfo.railwayYear;
     const totalWeeks = RailwayDateAPI.getTotalWeeks(railwayYear);
-    const periods = Math.ceil(totalWeeks / 4);
+    // Always 13 periods, with the last period having 5 weeks in a 53-week year
+    const periods = 13;
     
     return (
       <div className={`transition-all duration-300 ${animating ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>

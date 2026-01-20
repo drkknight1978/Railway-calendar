@@ -235,15 +235,24 @@
         if (!window.__RAILWAY_CALENDAR_MOUNTED__) {
             window.__RAILWAY_CALENDAR_MOUNTED__ = true;
 
-            // Wait for next tick to ensure RailwayCalendar is fully defined
-            setTimeout(() => {
-                if (typeof RailwayCalendar !== 'undefined') {
+            // Wait for RailwayCalendar to be defined
+            const mountApp = () => {
+                console.log('Attempting to mount RailwayCalendar...');
+                console.log('window.RailwayCalendar exists:', typeof window.RailwayCalendar !== 'undefined');
+
+                if (typeof window.RailwayCalendar !== 'undefined') {
+                    console.log('Mounting RailwayCalendar component');
                     const root = ReactDOM.createRoot(document.getElementById('root'));
-                    root.render(<RailwayCalendar />);
+                    root.render(<window.RailwayCalendar />);
                 } else {
-                    console.error('RailwayCalendar component not found');
+                    console.error('RailwayCalendar component not found, retrying...');
+                    // Retry after a longer delay
+                    setTimeout(mountApp, 100);
                 }
-            }, 0);
+            };
+
+            // Initial attempt with delay to allow Babel to process JSX
+            setTimeout(mountApp, 100);
         }
     </script>
 
