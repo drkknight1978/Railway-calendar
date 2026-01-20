@@ -257,9 +257,16 @@ const RailwayDateAPI = {
   /**
    * Get total weeks in a railway year (52 or 53)
    * Explicitly defines known 53-week years to handle discontinuities
+   *
+   * Railway Year 2025-2026 is a 53-week year:
+   * - Starts: Saturday, March 29, 2025 (Week 1, Day 1)
+   * - Ends: Friday, April 3, 2026 (Week 53, Day 7)
+   * - This is one week longer than the standard 52-week pattern
+   * - Subsequent years return to the 52-week pattern
    */
   getTotalWeeks: (railwayYear) => {
     // Known 53-week railway years (explicit definition for discontinuities)
+    // 2025 = FY 2025-2026 ends Friday, April 3, 2026 (one week later than standard)
     const fiftyThreeWeekYears = [2025];
 
     // Check if this is a known 53-week year
