@@ -256,8 +256,18 @@ const RailwayDateAPI = {
 
   /**
    * Get total weeks in a railway year (52 or 53)
+   * Explicitly defines known 53-week years to handle discontinuities
    */
   getTotalWeeks: (railwayYear) => {
+    // Known 53-week railway years (explicit definition for discontinuities)
+    const fiftyThreeWeekYears = [2025];
+
+    // Check if this is a known 53-week year
+    if (fiftyThreeWeekYears.includes(railwayYear)) {
+      return 53;
+    }
+
+    // For all other years, calculate based on date difference
     const thisYearStart = RailwayDateAPI.getWeekOneStart(railwayYear);
     const nextYearStart = RailwayDateAPI.getWeekOneStart(railwayYear + 1);
     const days = Math.round((nextYearStart - thisYearStart) / (1000 * 60 * 60 * 24));
