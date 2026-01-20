@@ -1,7 +1,7 @@
 // NOTE: React hooks and Lucide icons are provided by the index.html file
 // The following imports are commented out for browser compatibility:
 // import React, { useState, useMemo, useCallback, useEffect } from 'react';
-// import { ChevronLeft, ChevronRight, Calendar, Layers, Clock, Train, AlertCircle, Check, X, Sun, Sunrise, Sunset } from 'lucide-react';
+// import { ChevronLeft, ChevronRight, Calendar, Layers, Clock, Train, Sun, Sunrise, Sunset } from 'lucide-react';
 
 // These are loaded globally from CDN in index.html
 // Destructure React hooks from the global React object
@@ -14,9 +14,6 @@ const Calendar = window.Calendar;
 const Layers = window.Layers;
 const Clock = window.Clock;
 const Train = window.Train;
-const AlertCircle = window.AlertCircle;
-const Check = window.Check;
-const X = window.X;
 const Sun = window.Sun;
 const Sunrise = window.Sunrise;
 const Sunset = window.Sunset;
@@ -554,174 +551,182 @@ const RailwayDateAPI = {
 };
 
 // ============================================================================
-// UNIT TESTS
+// SEASON ARTWORK
 // ============================================================================
 
-const runTests = () => {
-  const results = [];
-  
-  // Test 1: Week 1 starts on first Saturday on or after April 1
-  const test1Year = 2025;
-  const week1Start2025 = RailwayDateAPI.getWeekOneStart(test1Year);
-  results.push({
-    name: "2025 Week 1 starts April 5 (first Sat on/after Apr 1)",
-    passed: week1Start2025.getDate() === 5 && week1Start2025.getMonth() === 3,
-    expected: "2025-04-05",
-    actual: week1Start2025.toISOString().split('T')[0]
-  });
-  
-  // Test 2: April 1 2023 was a Saturday, so Week 1 = April 1
-  const week1Start2023 = RailwayDateAPI.getWeekOneStart(2023);
-  results.push({
-    name: "2023 Week 1 starts April 1 (Apr 1 is Saturday)",
-    passed: week1Start2023.getDate() === 1 && week1Start2023.getMonth() === 3,
-    expected: "2023-04-01",
-    actual: week1Start2023.toISOString().split('T')[0]
-  });
-  
-  // Test 3: Date to railway conversion
-  const testDate = new Date(2025, 3, 5); // April 5, 2025
-  const railInfo = RailwayDateAPI.dateToRailway(testDate);
-  results.push({
-    name: "April 5 2025 = RY 2025/26 Week 1 Day 1",
-    passed: railInfo.railwayYear === 2025 && railInfo.railWeek === 1 && railInfo.dayOfRailWeek === 1,
-    expected: "RY2025 W1 D1",
-    actual: `RY${railInfo.railwayYear} W${railInfo.railWeek} D${railInfo.dayOfRailWeek}`
-  });
-  
-  // Test 4: Date before railway year starts belongs to previous year
-  const marchDate = new Date(2025, 2, 31); // March 31, 2025
-  const marchInfo = RailwayDateAPI.dateToRailway(marchDate);
-  results.push({
-    name: "March 31 2025 belongs to RY 2024/25",
-    passed: marchInfo.railwayYear === 2024,
-    expected: "RY2024",
-    actual: `RY${marchInfo.railwayYear}`
-  });
-  
-  // Test 5: Railway to date range conversion
-  const { startDate, endDate } = RailwayDateAPI.railwayToDateRange(2025, 1);
-  results.push({
-    name: "RY 2025 Week 1 = Apr 5-11, 2025",
-    passed: startDate.getDate() === 5 && endDate.getDate() === 11,
-    expected: "Apr 5-11",
-    actual: `Apr ${startDate.getDate()}-${endDate.getDate()}`
-  });
-  
-  // Test 6: Total weeks calculation - 2025 explicitly has 53 weeks
-  const totalWeeks2025 = RailwayDateAPI.getTotalWeeks(2025);
-  results.push({
-    name: "2025/26 has 53 weeks (explicit)",
-    passed: totalWeeks2025 === 53,
-    expected: "53",
-    actual: totalWeeks2025.toString()
-  });
+const svgToDataUrl = (svg) => 'data:image/svg+xml,' + encodeURIComponent(svg);
 
-  // Test 6b: Verify 2026 reverts to normal (52 or calculated)
-  const totalWeeks2026 = RailwayDateAPI.getTotalWeeks(2026);
-  results.push({
-    name: "2026/27 reverts to normal pattern",
-    passed: totalWeeks2026 === 52 || totalWeeks2026 === 53, // Calculated, not explicit
-    expected: "52 or 53 (calculated)",
-    actual: `${totalWeeks2026} (calculated)`
-  });
+const winterSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" fill="none">
+  <defs>
+    <linearGradient id="winterGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1B3F"/>
+      <stop offset="50%" stop-color="#0F325E"/>
+      <stop offset="100%" stop-color="#174777"/>
+    </linearGradient>
+    <radialGradient id="winterGlow" cx="70%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="#7CD4FF" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#7CD4FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="320" fill="url(#winterGradient)"/>
+  <circle cx="640" cy="70" r="38" fill="white" fill-opacity="0.85"/>
+  <circle cx="300" cy="180" r="180" fill="url(#winterGlow)" opacity="0.45"/>
+  <path d="M0 210 Q160 170 300 210 T600 200 T900 230 L900 320 L0 320 Z" fill="#0A1935"/>
+  <path d="M0 230 Q170 210 320 240 T620 230 T900 260 L900 320 L0 320 Z" fill="#0F2446"/>
+  <g stroke="#BEE9FF" stroke-width="3" stroke-linecap="round" opacity="0.85">
+    <path d="M150 70 l8 8 M150 78 l8 -8 M146 74 h16 M154 66 v16"/>
+    <path d="M90 110 l6 6 M90 116 l6 -6 M87 112 h12 M93 106 v12"/>
+    <path d="M480 50 l7 7 M480 57 l7 -7 M476 53 h14 M483 46 v14"/>
+    <path d="M700 120 l7 7 M700 127 l7 -7 M696 123 h14 M703 116 v14"/>
+    <path d="M360 90 l6 6 M360 96 l6 -6 M357 92 h12 M363 86 v12"/>
+  </g>
+  <g stroke="#E5F4FF" stroke-width="2" stroke-linecap="round" opacity="0.6">
+    <path d="M200 140 h18 M230 150 h14 M260 132 h12 M720 80 h18 M760 112 h12"/>
+    <path d="M420 110 h14 M450 128 h16 M520 90 h12 M560 140 h14"/>
+    <path d="M620 60 h12 M660 96 h14 M300 120 h18"/>
+  </g>
+</svg>`;
 
-  // Test 7: Period calculation
-  const week5Info = RailwayDateAPI.dateToRailway(new Date(2025, 4, 3)); // Early May 2025
-  results.push({
-    name: "Week 5 is in Period 2",
-    passed: week5Info.period === 2,
-    expected: "Period 2",
-    actual: `Period ${week5Info.period}`
-  });
-  
-  // Test 8: Day names correct
-  const fridayDate = new Date(2025, 3, 11); // April 11, 2025 (Friday)
-  const fridayInfo = RailwayDateAPI.dateToRailway(fridayDate);
-  results.push({
-    name: "Day 7 of rail week is Friday",
-    passed: fridayInfo.dayOfRailWeek === 7 && fridayInfo.dayName === 'Friday',
-    expected: "Day 7 = Friday",
-    actual: `Day ${fridayInfo.dayOfRailWeek} = ${fridayInfo.dayName}`
-  });
-  
-  // Test 9: Moon phase calculation - known full moon (Jan 13, 2025)
-  const fullMoonDate = new Date(2025, 0, 13);
-  const fullMoonPhase = RailwayDateAPI.getMoonPhase(fullMoonDate);
-  results.push({
-    name: "Jan 13, 2025 is near Full Moon",
-    passed: fullMoonPhase.phase === 4 || fullMoonPhase.phase === 3 || fullMoonPhase.phase === 5,
-    expected: "Full Moon (phase 4) ±1",
-    actual: `${fullMoonPhase.name} (phase ${fullMoonPhase.phase})`
-  });
-  
-  // Test 10: Moon phase calculation - known new moon (Jan 29, 2025)
-  const newMoonDate = new Date(2025, 0, 29);
-  const newMoonPhase = RailwayDateAPI.getMoonPhase(newMoonDate);
-  results.push({
-    name: "Jan 29, 2025 is near New Moon",
-    passed: newMoonPhase.phase === 0 || newMoonPhase.phase === 7 || newMoonPhase.phase === 1,
-    expected: "New Moon (phase 0) ±1",
-    actual: `${newMoonPhase.name} (phase ${newMoonPhase.phase})`
-  });
-  
-  // Test 11: Moon illumination ranges from 0-100
-  const randomMoon = RailwayDateAPI.getMoonPhase(new Date(2025, 5, 15));
-  results.push({
-    name: "Moon illumination is 0-100%",
-    passed: randomMoon.illumination >= 0 && randomMoon.illumination <= 100,
-    expected: "0-100%",
-    actual: `${randomMoon.illumination}%`
-  });
-  
-  // Test 12: Day length - Summer solstice (June 21) has longest day ~16.5h
-  const summerSolstice = RailwayDateAPI.getDayLength(new Date(2025, 5, 21));
-  results.push({
-    name: "Summer solstice ~16-17h daylight",
-    passed: summerSolstice.dayLengthHours >= 16 && summerSolstice.dayLengthHours <= 17,
-    expected: "16-17 hours",
-    actual: `${summerSolstice.dayLengthFormatted}`
-  });
-  
-  // Test 13: Day length - Winter solstice (Dec 21) has shortest day ~7.5h
-  const winterSolstice = RailwayDateAPI.getDayLength(new Date(2025, 11, 21));
-  results.push({
-    name: "Winter solstice ~7-8h daylight",
-    passed: winterSolstice.dayLengthHours >= 7 && winterSolstice.dayLengthHours <= 8.5,
-    expected: "7-8.5 hours",
-    actual: `${winterSolstice.dayLengthFormatted}`
-  });
-  
-  // Test 14: Day length - Equinox (March 20) has ~12h daylight
-  const equinox = RailwayDateAPI.getDayLength(new Date(2025, 2, 20));
-  results.push({
-    name: "Spring equinox ~12h daylight",
-    passed: equinox.dayLengthHours >= 11.5 && equinox.dayLengthHours <= 12.5,
-    expected: "11.5-12.5 hours",
-    actual: `${equinox.dayLengthFormatted}`
-  });
-  
-  // Test 15: Sunrise/Sunset are valid times
-  const anyDay = RailwayDateAPI.getDayLength(new Date(2025, 6, 15));
-  const sunriseValid = /^\d{2}:\d{2}$/.test(anyDay.sunrise);
-  const sunsetValid = /^\d{2}:\d{2}$/.test(anyDay.sunset);
-  results.push({
-    name: "Sunrise/Sunset times are valid format",
-    passed: sunriseValid && sunsetValid,
-    expected: "HH:MM format",
-    actual: `${anyDay.sunrise} / ${anyDay.sunset}`
-  });
-  
-  // Test 16: Days getting longer after winter solstice
-  const afterWinterSolstice = RailwayDateAPI.getDayLength(new Date(2025, 0, 15)); // Jan 15
-  results.push({
-    name: "Days getting longer in January",
-    passed: afterWinterSolstice.daysGettingLonger === true,
-    expected: "Days getting longer",
-    actual: afterWinterSolstice.daysGettingLonger ? "Getting longer" : "Getting shorter"
-  });
-  
-  return results;
+const springSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" fill="none">
+  <defs>
+    <linearGradient id="springGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0F3C2E"/>
+      <stop offset="50%" stop-color="#1E7C4A"/>
+      <stop offset="100%" stop-color="#37A06A"/>
+    </linearGradient>
+    <radialGradient id="springGlow" cx="30%" cy="20%" r="60%">
+      <stop offset="0%" stop-color="#9BF6A7" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#9BF6A7" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="320" fill="url(#springGradient)"/>
+  <circle cx="180" cy="80" r="42" fill="#FFEFA1" opacity="0.9"/>
+  <circle cx="260" cy="170" r="180" fill="url(#springGlow)" opacity="0.35"/>
+  <path d="M0 230 Q160 190 320 230 T640 220 T900 250 L900 320 L0 320 Z" fill="#0E2F24"/>
+  <path d="M0 250 Q150 220 320 255 T620 245 T900 275 L900 320 L0 320 Z" fill="#134230"/>
+  <path d="M120 230 Q140 190 160 230 T200 230" stroke="#7FE4A9" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <path d="M520 225 Q540 185 560 225 T600 225" stroke="#7FE4A9" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <g fill="#DFF9E3">
+    <circle cx="200" cy="180" r="7"/><circle cx="215" cy="165" r="6"/><circle cx="230" cy="182" r="5"/>
+    <circle cx="560" cy="195" r="7"/><circle cx="575" cy="180" r="6"/><circle cx="590" cy="198" r="5"/>
+    <circle cx="340" cy="190" r="6"/><circle cx="355" cy="175" r="5"/><circle cx="370" cy="193" r="5"/>
+  </g>
+  <g stroke="#B3F4C9" stroke-width="2" opacity="0.8" stroke-linecap="round">
+    <path d="M260 210 l-10 24 M260 210 l10 24"/>
+    <path d="M600 205 l-10 24 M600 205 l10 24"/>
+    <path d="M720 215 l-9 20 M720 215 l9 20"/>
+  </g>
+</svg>`;
+
+const summerSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" fill="none">
+  <defs>
+    <linearGradient id="summerGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1C2E5A"/>
+      <stop offset="40%" stop-color="#27467A"/>
+      <stop offset="100%" stop-color="#F5A623"/>
+    </linearGradient>
+    <radialGradient id="summerGlow" cx="75%" cy="25%" r="55%">
+      <stop offset="0%" stop-color="#FFD876" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#FFD876" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="320" fill="url(#summerGradient)"/>
+  <circle cx="660" cy="80" r="70" fill="url(#summerGlow)"/>
+  <path d="M0 240 Q200 210 400 240 T800 230 T900 250 L900 320 L0 320 Z" fill="#122341"/>
+  <path d="M0 260 Q210 235 430 265 T840 255 T900 280 L900 320 L0 320 Z" fill="#1B3153"/>
+  <g stroke="#FFE8A3" stroke-width="4" stroke-linecap="round" opacity="0.85">
+    <path d="M660 10 v28"/>
+    <path d="M660 150 v28"/>
+    <path d="M580 80 h32"/>
+    <path d="M708 80 h32"/>
+    <path d="M600 32 l20 20"/>
+    <path d="M700 32 l-20 20"/>
+    <path d="M600 128 l20 -20"/>
+    <path d="M700 128 l-20 -20"/>
+  </g>
+  <g stroke="#8FD4FF" stroke-width="3" stroke-linecap="round" opacity="0.7">
+    <path d="M120 210 Q200 200 280 210" />
+    <path d="M140 230 Q220 220 300 230" />
+    <path d="M400 215 Q480 205 560 215" />
+    <path d="M420 235 Q500 225 580 235" />
+  </g>
+</svg>`;
+
+const autumnSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" fill="none">
+  <defs>
+    <linearGradient id="autumnGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2C1A1A"/>
+      <stop offset="45%" stop-color="#4A2A1B"/>
+      <stop offset="100%" stop-color="#C45D1E"/>
+    </linearGradient>
+    <radialGradient id="autumnGlow" cx="25%" cy="25%" r="55%">
+      <stop offset="0%" stop-color="#FFB774" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#FFB774" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="320" fill="url(#autumnGradient)"/>
+  <circle cx="200" cy="80" r="60" fill="url(#autumnGlow)"/>
+  <path d="M0 235 Q170 210 340 235 T680 225 T900 255 L900 320 L0 320 Z" fill="#1F1414"/>
+  <path d="M0 255 Q180 235 360 260 T700 245 T900 275 L900 320 L0 320 Z" fill="#2A1A15"/>
+  <g fill="#F7C08A" opacity="0.8">
+    <path d="M520 170 q18 -18 40 0 q-18 18 -40 0" />
+    <path d="M600 140 q18 -18 36 0 q-18 18 -36 0" />
+    <path d="M670 165 q16 -16 34 0 q-18 18 -34 0" />
+    <path d="M750 135 q16 -16 34 0 q-18 18 -34 0" />
+  </g>
+  <g fill="#F2994A" opacity="0.8">
+    <path d="M480 210 q-14 -34 12 -46 q26 12 12 46 q-14 34 -24 0" />
+    <path d="M560 195 q-12 -30 11 -40 q23 10 11 40 q-12 30 -22 0" />
+    <path d="M640 210 q-14 -32 12 -44 q26 12 12 44 q-14 32 -24 0" />
+  </g>
+  <g stroke="#F7C08A" stroke-width="3" stroke-linecap="round" opacity="0.7">
+    <path d="M130 120 q20 10 30 0" />
+    <path d="M160 150 q26 8 38 -2" />
+    <path d="M110 180 q22 12 36 0" />
+  </g>
+</svg>`;
+
+const seasonData = {
+  winter: {
+    name: 'Winter',
+    emoji: '❄️',
+    months: 'Dec — Feb',
+    description: 'Frosty mornings and long blue evenings over the network.',
+    badge: 'bg-cyan-500/15 text-cyan-200 border border-cyan-400/30',
+    image: svgToDataUrl(winterSvg)
+  },
+  spring: {
+    name: 'Spring',
+    emoji: '🌱',
+    months: 'Mar — May',
+    description: 'Bright greens, longer days, and blossoms by the sidings.',
+    badge: 'bg-emerald-500/15 text-emerald-100 border border-emerald-400/30',
+    image: svgToDataUrl(springSvg)
+  },
+  summer: {
+    name: 'Summer',
+    emoji: '☀️',
+    months: 'Jun — Aug',
+    description: 'Warm sunsets, bright skies, and long light evenings on the rails.',
+    badge: 'bg-amber-500/20 text-amber-100 border border-amber-400/30',
+    image: svgToDataUrl(summerSvg)
+  },
+  autumn: {
+    name: 'Autumn',
+    emoji: '🍂',
+    months: 'Sep — Nov',
+    description: 'Copper light, crisp air, and falling leaves along the line.',
+    badge: 'bg-orange-500/20 text-orange-100 border border-orange-400/30',
+    image: svgToDataUrl(autumnSvg)
+  }
+};
+
+const getSeasonInfo = (date) => {
+  const month = date.getMonth();
+  if (month >= 2 && month <= 4) return seasonData.spring;
+  if (month >= 5 && month <= 7) return seasonData.summer;
+  if (month >= 8 && month <= 10) return seasonData.autumn;
+  return seasonData.winter;
 };
 
 // ============================================================================
@@ -729,15 +734,22 @@ const runTests = () => {
 // ============================================================================
 
 const RailwayCalendar = () => {
+  const normalizeDate = (value) => {
+    const d = new Date(value);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
   const [viewMode, setViewMode] = useState('month');
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [showTests, setShowTests] = useState(false);
   const [animating, setAnimating] = useState(false);
   const [tooltip, setTooltip] = useState({ visible: false, content: '', x: 0, y: 0 });
+  const [selectedDate, setSelectedDate] = useState(() => normalizeDate(new Date()));
   
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const todayInfo = RailwayDateAPI.dateToRailway(today);
+  const selectedSeasonInfo = useMemo(() => getSeasonInfo(selectedDate), [selectedDate]);
   
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
@@ -765,8 +777,10 @@ const RailwayCalendar = () => {
   
   // Navigate to specific day in week view
   const goToDay = (date) => {
+    const normalized = normalizeDate(date);
+    setSelectedDate(normalized);
     animateTransition(() => {
-      setCurrentDate(new Date(date));
+      setCurrentDate(new Date(normalized));
       setViewMode('week');
     });
   };
@@ -802,7 +816,9 @@ const RailwayCalendar = () => {
   };
   
   const goToToday = () => {
-    animateTransition(() => setCurrentDate(new Date()));
+    const todayDate = normalizeDate(new Date());
+    setSelectedDate(todayDate);
+    animateTransition(() => setCurrentDate(new Date(todayDate)));
   };
   
   const jumpToRailwayWeek = (railwayYear, week) => {
@@ -991,6 +1007,10 @@ const RailwayCalendar = () => {
               <div key={idx} className="flex flex-col items-center">
                 {/* Station marker */}
                 <div className={`w-6 h-6 rounded-full border-4 ${
+                  selectedDate && selectedDate.toDateString() === day.date.toDateString()
+                    ? 'ring-2 ring-indigo-400 ring-offset-2 ring-offset-slate-900'
+                    : ''
+                } ${
                   isToday(day.date) 
                     ? 'bg-cyan-400 border-cyan-300 shadow-lg shadow-cyan-500/50 animate-pulse' 
                     : day.isPayday
@@ -1001,7 +1021,13 @@ const RailwayCalendar = () => {
                 }`}></div>
                 
                 {/* Day card */}
-                <div className={`mt-4 w-full p-4 rounded-xl backdrop-blur-xl border transition-all hover:scale-105 ${
+                <div
+                  onClick={() => setSelectedDate(normalizeDate(day.date))}
+                  className={`mt-4 w-full p-4 rounded-xl backdrop-blur-xl border transition-all hover:scale-105 cursor-pointer ${
+                  selectedDate && selectedDate.toDateString() === day.date.toDateString()
+                    ? 'outline outline-2 outline-indigo-400/70'
+                    : ''
+                  } ${
                   isToday(day.date)
                     ? 'bg-cyan-500/20 border-cyan-400/50 shadow-lg shadow-cyan-500/20'
                     : day.isPayday
@@ -1232,93 +1258,96 @@ const RailwayCalendar = () => {
                 </div>
                 
                 {/* Days */}
-                {week.map((day, di) => (
-                  <div
-                    key={di}
-                    onClick={() => goToDay(day.date)}
-                    onMouseEnter={(e) => showTooltip(e, `${day.date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}\n${day.isPayday ? '💰 PAYDAY! 💰' : day.moon.emoji + ' ' + day.moon.name}\n☀️ ${day.dayLight.dayLengthFormatted} (${day.dayLight.sunrise}–${day.dayLight.sunset})`)}
-                    onMouseLeave={hideTooltip}
-                    className={`group p-1.5 min-h-[75px] transition-all border-r border-white/5 last:border-0 cursor-pointer ${
-                      day.isCurrentMonth ? 'bg-white/[0.02]' : ''
-                    } ${isToday(day.date) ? 'ring-2 ring-inset ring-cyan-400' : ''} ${day.isPayday ? 'ring-2 ring-inset ring-amber-400' : ''} hover:bg-white/10 active:bg-white/15`}
-                  >
-                    <div className="flex flex-col h-full relative">
-                      {/* Payday sparkle background */}
-                      {day.isPayday && day.isCurrentMonth && (
-                        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
-                          <div className="absolute top-1 left-1 w-1 h-1 bg-yellow-300 rounded-full animate-ping" style={{ animationDuration: '3s' }}></div>
-                          <div className="absolute top-2 right-2 w-0.5 h-0.5 bg-amber-200 rounded-full animate-ping" style={{ animationDelay: '1s', animationDuration: '3s' }}></div>
-                          <div className="absolute bottom-1 left-3 w-0.5 h-0.5 bg-yellow-400 rounded-full animate-ping" style={{ animationDelay: '2s', animationDuration: '3s' }}></div>
+                {week.map((day, di) => {
+                  const isSelected = selectedDate && selectedDate.toDateString() === day.date.toDateString();
+                  return (
+                    <div
+                      key={di}
+                      onClick={() => goToDay(day.date)}
+                      onMouseEnter={(e) => showTooltip(e, `${day.date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}\n${day.isPayday ? '💰 PAYDAY! 💰' : day.moon.emoji + ' ' + day.moon.name}\n☀️ ${day.dayLight.dayLengthFormatted} (${day.dayLight.sunrise}–${day.dayLight.sunset})`)}
+                      onMouseLeave={hideTooltip}
+                      className={`group p-1.5 min-h-[75px] transition-all border-r border-white/5 last:border-0 cursor-pointer ${
+                        day.isCurrentMonth ? 'bg-white/[0.02]' : ''
+                      } ${isToday(day.date) ? 'ring-2 ring-inset ring-cyan-400' : ''} ${day.isPayday ? 'ring-2 ring-inset ring-amber-400' : ''} ${isSelected ? 'ring-2 ring-indigo-400 ring-offset-2 ring-offset-slate-900' : ''} hover:bg-white/10 active:bg-white/15`}
+                    >
+                      <div className="flex flex-col h-full relative">
+                        {/* Payday sparkle background */}
+                        {day.isPayday && day.isCurrentMonth && (
+                          <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+                            <div className="absolute top-1 left-1 w-1 h-1 bg-yellow-300 rounded-full animate-ping" style={{ animationDuration: '3s' }}></div>
+                            <div className="absolute top-2 right-2 w-0.5 h-0.5 bg-amber-200 rounded-full animate-ping" style={{ animationDelay: '1s', animationDuration: '3s' }}></div>
+                            <div className="absolute bottom-1 left-3 w-0.5 h-0.5 bg-yellow-400 rounded-full animate-ping" style={{ animationDelay: '2s', animationDuration: '3s' }}></div>
+                          </div>
+                        )}
+                        
+                        <div className="flex items-start justify-between">
+                          <div className={`text-sm font-medium ${
+                            isToday(day.date) 
+                              ? 'text-cyan-300' 
+                              : day.isPayday && day.isCurrentMonth
+                                ? 'text-amber-300'
+                              : day.isCurrentMonth 
+                                ? 'text-white' 
+                                : 'text-white/30'
+                          }`}>
+                            {day.date.getDate()}
+                          </div>
+                          {/* Icon - Payday or Moon Phase */}
+                          {day.isPayday && day.isCurrentMonth ? (
+                            <span 
+                              className="text-base animate-pulse"
+                              onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, '💰 PAYDAY! 💰'); }}
+                              onMouseLeave={hideTooltip}
+                            >
+                              💰
+                            </span>
+                          ) : (
+                            <span 
+                              className={`text-xs ${day.isCurrentMonth ? (day.moon.isSignificant ? 'opacity-90' : 'opacity-40') : 'opacity-20'}`}
+                              onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, `${day.moon.emoji} ${day.moon.name} (${day.moon.illumination}%)`); }}
+                              onMouseLeave={hideTooltip}
+                            >
+                              {day.moon.emoji}
+                            </span>
+                          )}
                         </div>
-                      )}
-                      
-                      <div className="flex items-start justify-between">
-                        <div className={`text-sm font-medium ${
-                          isToday(day.date) 
-                            ? 'text-cyan-300' 
-                            : day.isPayday && day.isCurrentMonth
-                              ? 'text-amber-300'
-                            : day.isCurrentMonth 
-                              ? 'text-white' 
-                              : 'text-white/30'
-                        }`}>
-                          {day.date.getDate()}
-                        </div>
-                        {/* Icon - Payday or Moon Phase */}
-                        {day.isPayday && day.isCurrentMonth ? (
-                          <span 
-                            className="text-base animate-pulse"
-                            onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, '💰 PAYDAY! 💰'); }}
+                        
+                        {/* Day Length Bar */}
+                        {!day.isPayday && (
+                          <div 
+                            className={`mt-1 h-1 w-full rounded-full overflow-hidden ${day.isCurrentMonth ? 'bg-slate-700' : 'bg-slate-800'}`}
+                            onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, `☀️ ${day.dayLight.dayLengthFormatted}\n🌅 ${day.dayLight.sunrise} → 🌇 ${day.dayLight.sunset}`); }}
                             onMouseLeave={hideTooltip}
                           >
-                            💰
-                          </span>
-                        ) : (
-                          <span 
-                            className={`text-xs ${day.isCurrentMonth ? (day.moon.isSignificant ? 'opacity-90' : 'opacity-40') : 'opacity-20'}`}
-                            onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, `${day.moon.emoji} ${day.moon.name} (${day.moon.illumination}%)`); }}
+                            <div 
+                              className={`h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full ${day.isCurrentMonth ? 'opacity-70' : 'opacity-30'}`}
+                              style={{ width: `${day.dayLight.dayLengthPercent}%` }}
+                            ></div>
+                          </div>
+                        )}
+                        
+                        {day.holiday && !day.isPayday && (
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); goToDay(day.date); }}
+                            onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, `${day.holiday.emoji} ${day.holiday.name}`); }}
                             onMouseLeave={hideTooltip}
+                            className="mt-1 text-[10px] text-rose-400 truncate flex items-center gap-0.5 hover:text-rose-300 cursor-pointer transition-all hover:scale-105 w-full"
                           >
-                            {day.moon.emoji}
-                          </span>
+                            <span>{day.holiday.emoji}</span>
+                            <span className="truncate">{day.holiday.name.split(' ')[0]}</span>
+                          </button>
+                        )}
+                        {isToday(day.date) && !day.isPayday && (
+                          <div className="mt-auto">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/30 text-cyan-300">
+                              TODAY
+                            </span>
+                          </div>
                         )}
                       </div>
-                      
-                      {/* Day Length Bar */}
-                      {!day.isPayday && (
-                        <div 
-                          className={`mt-1 h-1 w-full rounded-full overflow-hidden ${day.isCurrentMonth ? 'bg-slate-700' : 'bg-slate-800'}`}
-                          onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, `☀️ ${day.dayLight.dayLengthFormatted}\n🌅 ${day.dayLight.sunrise} → 🌇 ${day.dayLight.sunset}`); }}
-                          onMouseLeave={hideTooltip}
-                        >
-                          <div 
-                            className={`h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full ${day.isCurrentMonth ? 'opacity-70' : 'opacity-30'}`}
-                            style={{ width: `${day.dayLight.dayLengthPercent}%` }}
-                          ></div>
-                        </div>
-                      )}
-                      
-                      {day.holiday && !day.isPayday && (
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); goToDay(day.date); }}
-                          onMouseEnter={(e) => { e.stopPropagation(); showTooltip(e, `${day.holiday.emoji} ${day.holiday.name}`); }}
-                          onMouseLeave={hideTooltip}
-                          className="mt-1 text-[10px] text-rose-400 truncate flex items-center gap-0.5 hover:text-rose-300 cursor-pointer transition-all hover:scale-105 w-full"
-                        >
-                          <span>{day.holiday.emoji}</span>
-                          <span className="truncate">{day.holiday.name.split(' ')[0]}</span>
-                        </button>
-                      )}
-                      {isToday(day.date) && !day.isPayday && (
-                        <div className="mt-auto">
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/30 text-cyan-300">
-                            TODAY
-                          </span>
-                        </div>
-                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             );
           })}
@@ -1424,59 +1453,6 @@ const RailwayCalendar = () => {
   };
 
   // ============================================================================
-  // TEST RESULTS PANEL
-  // ============================================================================
-  
-  const TestPanel = () => {
-    const testResults = useMemo(() => runTests(), []);
-    const allPassed = testResults.every(t => t.passed);
-    
-    return (
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowTests(false)}>
-        <div className="bg-slate-900 rounded-2xl border border-white/20 max-w-2xl w-full max-h-[80vh] overflow-hidden" onClick={e => e.stopPropagation()}>
-          <div className="p-4 border-b border-white/10 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <AlertCircle className={allPassed ? 'text-emerald-400' : 'text-amber-400'} />
-              <h3 className="text-white font-semibold">API Unit Tests</h3>
-            </div>
-            <button onClick={() => setShowTests(false)} className="text-white/50 hover:text-white">
-              <X size={20} />
-            </button>
-          </div>
-          
-          <div className="p-4 overflow-y-auto max-h-[60vh]">
-            <div className="space-y-3">
-              {testResults.map((test, i) => (
-                <div key={i} className={`p-3 rounded-xl ${test.passed ? 'bg-emerald-500/10 border border-emerald-500/30' : 'bg-red-500/10 border border-red-500/30'}`}>
-                  <div className="flex items-start gap-3">
-                    {test.passed ? (
-                      <Check className="text-emerald-400 flex-shrink-0 mt-0.5" size={18} />
-                    ) : (
-                      <X className="text-red-400 flex-shrink-0 mt-0.5" size={18} />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="text-white text-sm font-medium">{test.name}</div>
-                      <div className="text-white/50 text-xs mt-1">
-                        Expected: {test.expected} | Actual: {test.actual}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="p-4 border-t border-white/10 bg-white/5">
-            <div className={`text-center font-medium ${allPassed ? 'text-emerald-400' : 'text-amber-400'}`}>
-              {allPassed ? '✓ All tests passed' : `⚠ ${testResults.filter(t => !t.passed).length} test(s) failed`}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // ============================================================================
   // MAIN RENDER
   // ============================================================================
   
@@ -1521,6 +1497,45 @@ const RailwayCalendar = () => {
               <div className="px-4 py-3 rounded-2xl bg-violet-500/10 border border-violet-500/30 backdrop-blur">
                 <div className="text-violet-400/70 text-xs uppercase tracking-wider">Railway Year</div>
                 <div className="text-violet-300 font-bold text-xl">{todayInfo.railwayYearDisplay}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Seasonal artwork */}
+          <div className="mt-6">
+            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-xl">
+              <img
+                src={selectedSeasonInfo.image}
+                alt={`${selectedSeasonInfo.name} illustration`}
+                className="w-full h-44 md:h-56 object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/25 to-black/60"></div>
+              <div className="absolute inset-0 p-4 md:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur ${selectedSeasonInfo.badge}`}>
+                    <span className="text-lg">{selectedSeasonInfo.emoji}</span>
+                    <span>{selectedSeasonInfo.name}</span>
+                  </div>
+                  <div className="text-xl md:text-2xl font-semibold text-white mt-2">Seasonal view</div>
+                  <p className="text-white/70 text-sm max-w-2xl">{selectedSeasonInfo.description}</p>
+                </div>
+                <div className="bg-white/10 border border-white/15 rounded-2xl px-4 py-3 backdrop-blur min-w-[200px] flex flex-col gap-1.5">
+                  <div className="text-white/60 text-xs uppercase tracking-wider">Selected Day</div>
+                  <div className="text-white font-semibold">
+                    {selectedDate.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
+                  </div>
+                  <div className="text-white/60 text-xs uppercase tracking-wider mt-2">Season Window</div>
+                  <div className="text-white font-semibold">{selectedSeasonInfo.months}</div>
+                  <div className="text-white/60 text-xs mt-1">Updates when you select a day</div>
+                  <button
+                    type="button"
+                    onClick={goToToday}
+                    className="mt-1 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-sm text-white transition-all"
+                  >
+                    Select today
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -1667,24 +1682,14 @@ const RailwayCalendar = () => {
           {viewMode === 'year' && <YearView />}
         </main>
         
-        {/* Footer with API Test Button */}
-        <footer className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-white/10">
-          <div className="text-white/40 text-sm">
+        <footer className="mt-8 pt-6 border-t border-white/10">
+          <div className="text-white/40 text-sm text-center sm:text-left">
             Week 1 starts on first Saturday on or after 1 April • Weeks run Saturday–Friday • 4 weeks per period
+            © Colin McLaren - 2025
           </div>
-          <button
-            onClick={() => setShowTests(true)}
-            className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 transition-all text-sm flex items-center gap-2"
-          >
-            <AlertCircle size={16} />
-            Run API Tests
-          </button>
         </footer>
       </div>
-      
-      {/* Test Panel Modal */}
-      {showTests && <TestPanel />}
-      
+
       {/* Tooltip */}
       <div 
         className={`fixed z-50 pointer-events-none transition-all duration-150 ${

@@ -4,7 +4,7 @@ A sophisticated web-based calendar application designed specifically for Network
 
 ![Railway Calendar](https://img.shields.io/badge/version-1.0-blue)
 ![React](https://img.shields.io/badge/React-18+-61dafb)
-![License](https://img.shields.io/badge/license-Network%20Rail-orange)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 ## Features
 
@@ -164,20 +164,6 @@ const latitude = 51.5074;  // Degrees North
 const longitude = -0.1278; // Degrees West (negative)
 ```
 
-## Testing
-
-The application includes a built-in test suite with 16 unit tests covering:
-
-- Week 1 calculation
-- Date conversion (Gregorian ↔ Railway)
-- Week ranges and boundaries
-- Period calculations
-- Moon phases
-- Day length calculations
-- Time format validation
-
-Access tests by clicking the "Run API Tests" button in the application footer.
-
 ## Known Limitations
 
 1. **Approximate Religious Dates**: Non-Christian holidays use simplified approximations
@@ -236,11 +222,11 @@ Railway-calendar/
 
 ## License
 
-Created for Network Rail personnel use.
+Created by Colin McLaren and with AI..
 
 ## Version History
 
-**v1.0** - Initial release (December 2024)
+**v1.0** - Initial release (November 2025)
 - Railway week calculation system
 - Three view modes (Week/Month/Year)
 - Moon phase integration
@@ -248,7 +234,6 @@ Created for Network Rail personnel use.
 - UK holidays and events
 - Payday tracking
 - Responsive design with animations
-- Unit test framework
 
 ## Support
 
