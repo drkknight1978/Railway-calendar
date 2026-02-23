@@ -237,16 +237,10 @@
 
             // Wait for RailwayCalendar to be defined
             const mountApp = () => {
-                console.log('Attempting to mount RailwayCalendar...');
-                console.log('window.RailwayCalendar exists:', typeof window.RailwayCalendar !== 'undefined');
-
                 if (typeof window.RailwayCalendar !== 'undefined') {
-                    console.log('Mounting RailwayCalendar component');
                     const root = ReactDOM.createRoot(document.getElementById('root'));
                     root.render(<window.RailwayCalendar />);
                 } else {
-                    console.error('RailwayCalendar component not found, retrying...');
-                    // Retry after a longer delay
                     setTimeout(mountApp, 100);
                 }
             };

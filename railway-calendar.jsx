@@ -236,108 +236,79 @@ const RailwayDateAPI = {
   },
 
   /**
-   * Get the first Saturday on or after April 1st for a given railway year
-   * This is Week 1 Day 1 of that railway year
+   * Get Week 1 start date: always April 1st of the railway year
+   * Week 1 is a variable-length partial week (April 1 to the Saturday before Week 2)
    */
   getWeekOneStart: (railwayYear) => {
-    // Start with April 1st
-    const april1 = new Date(railwayYear, 3, 1); // Month 3 = April
-    const dayOfWeek = april1.getDay(); // 0=Sun, 6=Sat
-
-    // Calculate days to add to reach the next Saturday (or 0 if already Saturday)
-    // If April 1st is Saturday (6), add 0 days
-    // If April 1st is Sunday (0), add 6 days
-    // If April 1st is Monday (1), add 5 days, etc.
-    const daysToAdd = dayOfWeek === 6 ? 0 : (6 - dayOfWeek + 7) % 7;
-
-    const firstSaturday = new Date(railwayYear, 3, 1 + daysToAdd);
-    return firstSaturday;
+    return new Date(railwayYear, 3, 1); // April 1 = Week 1 Day 1
   },
 
   /**
-   * Get total weeks in a railway year (52 or 53)
-   * Explicitly defines known 53-week years to handle discontinuities
-   *
-   * Railway Year 2025-2026 is a 53-week year:
-   * - Starts: Saturday, March 29, 2025 (Week 1, Day 1)
-   * - Ends: Friday, April 3, 2026 (Week 53, Day 7)
-   * - This is one week longer than the standard 52-week pattern
-   * - Subsequent years return to the 52-week pattern
+   * Get Week 2 start date: first Sunday on or after April 6th
+   * Weeks 2–52 run Sunday to Saturday
+   * Using April 6 as the anchor ensures Week 1 always contains April 1–5 at minimum
+   */
+  getWeekTwoStart: (railwayYear) => {
+    const april6 = new Date(railwayYear, 3, 6); // Month 3 = April
+    const dayOfWeek = april6.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+    const daysToAdd = dayOfWeek === 0 ? 0 : (7 - dayOfWeek);
+    return new Date(railwayYear, 3, 6 + daysToAdd);
+  },
+
+  /**
+   * Get total weeks in a railway year
+   * The railway year always has exactly 52 weeks:
+   *   Week 1 = April 1 to the Saturday before Week 2 (variable length)
+   *   Weeks 2–52 = Sunday to Saturday blocks
+   * FY runs April 1 to March 31
    */
   getTotalWeeks: (railwayYear) => {
-    // Known 53-week railway years (explicit definition for discontinuities)
-    // 2025 = FY 2025-2026 ends Friday, April 3, 2026 (one week later than standard)
-    const fiftyThreeWeekYears = [2025];
-
-    // Check if this is a known 53-week year
-    if (fiftyThreeWeekYears.includes(railwayYear)) {
-      return 53;
-    }
-
-    // For all other years, calculate based on date difference
-    const thisYearStart = RailwayDateAPI.getWeekOneStart(railwayYear);
-    const nextYearStart = RailwayDateAPI.getWeekOneStart(railwayYear + 1);
-    const days = Math.round((nextYearStart - thisYearStart) / (1000 * 60 * 60 * 24));
-    return Math.floor(days / 7);
+    return 52;
   },
 
   /**
    * Convert a Gregorian date to Railway Year + Rail Week + Day of Rail Week
-   * Day of rail week: 1=Saturday, 2=Sunday, ..., 7=Friday
+   * FY runs April 1 (Week 1) to March 31 each year
+   * Week 1: April 1 to the Saturday before Week 2 (variable length, at least 5 days)
+   * Weeks 2–52: Sunday to Saturday blocks
+   * Day of rail week: 1=Sunday, 2=Monday, ..., 7=Saturday
    */
   dateToRailway: (date) => {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
 
-    // Determine which railway year this date belongs to
-    // Start by checking the previous calendar year first (important for 53-week years)
-    let railwayYear = d.getFullYear() - 1;
-    let weekOneStart = RailwayDateAPI.getWeekOneStart(railwayYear);
-    let totalWeeks = RailwayDateAPI.getTotalWeeks(railwayYear);
-    let yearEnd = new Date(weekOneStart);
-    yearEnd.setDate(yearEnd.getDate() + (totalWeeks * 7) - 1);
+    // Determine railway year: FY starts April 1, ends March 31
+    // Jan–Mar (month 0–2) belong to the previous year's FY
+    const calYear = d.getFullYear();
+    const month = d.getMonth(); // 0-indexed; 3=April
+    const railwayYear = month >= 3 ? calYear : calYear - 1;
 
-    // Check if date falls within previous railway year
-    if (d >= weekOneStart && d <= yearEnd) {
-      // Date belongs to previous railway year
+    // Week 2 start = first Sunday on or after April 6
+    const weekTwoStart = RailwayDateAPI.getWeekTwoStart(railwayYear);
+
+    let railWeek;
+    if (d < weekTwoStart) {
+      // Week 1: April 1 up to (but not including) Week 2 start
+      railWeek = 1;
     } else {
-      // Try current calendar year
-      railwayYear = d.getFullYear();
-      weekOneStart = RailwayDateAPI.getWeekOneStart(railwayYear);
-      totalWeeks = RailwayDateAPI.getTotalWeeks(railwayYear);
-      yearEnd = new Date(weekOneStart);
-      yearEnd.setDate(yearEnd.getDate() + (totalWeeks * 7) - 1);
-
-      // Check if date falls within current railway year
-      if (d >= weekOneStart && d <= yearEnd) {
-        // Date belongs to current railway year
-      } else {
-        // Must be in next railway year
-        railwayYear = d.getFullYear() + 1;
-        weekOneStart = RailwayDateAPI.getWeekOneStart(railwayYear);
-      }
+      // Weeks 2–52: each Sunday starts a new week
+      const daysSinceWeekTwo = Math.round((d - weekTwoStart) / (1000 * 60 * 60 * 24));
+      railWeek = Math.min(Math.floor(daysSinceWeekTwo / 7) + 2, 52);
     }
-    
-    // Calculate days since Week 1 start (use Math.round to handle DST transitions)
-    const daysDiff = Math.round((d - weekOneStart) / (1000 * 60 * 60 * 24));
-    
-    // Rail week (1-indexed)
-    const railWeek = Math.floor(daysDiff / 7) + 1;
-    
-    // Day of rail week (1=Sat, 7=Fri)
-    const dayOfRailWeek = (daysDiff % 7) + 1;
 
-    // Period (4 weeks each, always 13 periods max)
-    // Week 53 should be in period 13 (making it a 5-week period)
+    // Day of rail week: 1=Sunday, 2=Monday, ..., 7=Saturday (matches JS getDay() + 1)
+    const dayOfRailWeek = d.getDay() + 1;
+
+    // Period: 13 periods of 4 weeks each
     const period = Math.min(Math.ceil(railWeek / 4), 13);
 
     // Week within period
-    // Calculate based on the period's start week
     const periodStartWeek = (period - 1) * 4 + 1;
     const weekInPeriod = railWeek - periodStartWeek + 1;
 
-    // Recalculate totalWeeks for the final determined railway year
-    totalWeeks = RailwayDateAPI.getTotalWeeks(railwayYear);
+    const totalWeeks = 52;
+
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     return {
       railwayYear,
@@ -346,34 +317,43 @@ const RailwayDateAPI = {
       period,
       weekInPeriod,
       totalWeeks,
-      dayName: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'][dayOfRailWeek - 1],
+      dayName: dayNames[d.getDay()],
       railwayYearDisplay: `${railwayYear}/${(railwayYear + 1).toString().slice(-2)}`
     };
   },
 
   /**
-   * Given a railway year and rail week number, return start (Saturday) and end (Friday) dates
+   * Given a railway year and rail week number, return start and end dates
+   * Week 1: April 1 → the Saturday before Week 2 (variable length)
+   * Weeks 2–52: Sunday → Saturday (7 days each)
    */
   railwayToDateRange: (railwayYear, railWeek) => {
-    const weekOneStart = RailwayDateAPI.getWeekOneStart(railwayYear);
-    const startDate = new Date(weekOneStart);
-    startDate.setDate(startDate.getDate() + (railWeek - 1) * 7);
-    
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 6);
-    
-    return { startDate, endDate };
+    const weekTwoStart = RailwayDateAPI.getWeekTwoStart(railwayYear);
+    if (railWeek === 1) {
+      // Week 1: April 1 to the day before Week 2 starts (always a Saturday)
+      const startDate = new Date(railwayYear, 3, 1); // April 1
+      const endDate = new Date(weekTwoStart);
+      endDate.setDate(endDate.getDate() - 1);
+      return { startDate, endDate };
+    } else {
+      // Weeks 2–52: Sunday to Saturday blocks
+      const startDate = new Date(weekTwoStart);
+      startDate.setDate(startDate.getDate() + (railWeek - 2) * 7);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 6);
+      return { startDate, endDate };
+    }
   },
 
   /**
    * Get period start and end dates for a railway year
-   * Note: There are always 13 periods. In a 53-week year, Period 13 has 5 weeks instead of 4.
+   * Always 13 periods of exactly 4 weeks each (Weeks 1–52)
    */
   getPeriodDates: (railwayYear, period) => {
-    const totalWeeks = RailwayDateAPI.getTotalWeeks(railwayYear);
+    const totalWeeks = RailwayDateAPI.getTotalWeeks(railwayYear); // always 52
     const startWeek = (period - 1) * 4 + 1;
 
-    // For period 13, always go to the last week of the year (52 or 53)
+    // Period 13 ends at Week 52; all others end at period * 4
     const endWeek = period === 13 ? totalWeeks : Math.min(period * 4, totalWeeks);
 
     const { startDate } = RailwayDateAPI.railwayToDateRange(railwayYear, startWeek);
@@ -779,7 +759,7 @@ const RailwayCalendar = () => {
   
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
-  const dayNames = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   
   // Tooltip handlers
   const showTooltip = (e, content) => {
@@ -900,8 +880,8 @@ const RailwayCalendar = () => {
   const WeekView = () => {
     const weekStart = new Date(currentDate);
     const dayOfWeek = weekStart.getDay();
-    const daysToSaturday = (dayOfWeek + 1) % 7;
-    weekStart.setDate(weekStart.getDate() - daysToSaturday);
+    // Weeks run Sunday–Saturday; go back to the nearest Sunday
+    weekStart.setDate(weekStart.getDate() - dayOfWeek);
     
     const weekDays = Array.from({ length: 7 }, (_, i) => {
       const d = new Date(weekStart);
@@ -1210,10 +1190,10 @@ const RailwayCalendar = () => {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     
-    // Start from Saturday before or on first day
+    // Start from Sunday before or on first day (weeks run Sunday–Saturday)
     const startDate = new Date(firstDay);
     const dayOfWeek = startDate.getDay();
-    startDate.setDate(startDate.getDate() - ((dayOfWeek + 1) % 7));
+    startDate.setDate(startDate.getDate() - dayOfWeek);
     
     // Generate 6 weeks of days
     const weeks = [];
@@ -1711,7 +1691,7 @@ const RailwayCalendar = () => {
         
         <footer className="mt-8 pt-6 border-t border-white/10">
           <div className="text-white/40 text-sm text-center sm:text-left">
-            Week 1 starts on first Saturday on or after 1 April • Weeks run Saturday–Friday • 4 weeks per period
+            Week 1 starts 1 April • Weeks 2–52 run Sunday–Saturday • 4 weeks per period • 13 periods
             © Colin McLaren - 2025
           </div>
         </footer>
