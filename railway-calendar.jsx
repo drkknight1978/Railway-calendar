@@ -1029,6 +1029,8 @@ const RailwayCalendar = () => {
                 {/* Day card */}
                 <div
                   onClick={() => setSelectedDate(normalizeDate(day.date))}
+                  onMouseEnter={(e) => showTooltip(e, `🚂 FY ${day.info.railwayYearDisplay} • Week ${day.info.railWeek} • Period ${day.info.period}`)}
+                  onMouseLeave={hideTooltip}
                   className={`mt-4 w-full p-4 rounded-xl backdrop-blur-xl border transition-all hover:scale-105 cursor-pointer ${
                   selectedDate && selectedDate.toDateString() === day.date.toDateString()
                     ? 'outline outline-2 outline-indigo-400/70'
@@ -1270,7 +1272,7 @@ const RailwayCalendar = () => {
                     <div
                       key={di}
                       onClick={() => goToDay(day.date)}
-                      onMouseEnter={(e) => showTooltip(e, `${day.date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}\n${day.isPayday ? '💰 PAYDAY! 💰' : day.moon.emoji + ' ' + day.moon.name}\n☀️ ${day.dayLight.dayLengthFormatted} (${day.dayLight.sunrise}–${day.dayLight.sunset})`)}
+                      onMouseEnter={(e) => showTooltip(e, `${day.date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}\n🚂 FY ${day.info.railwayYearDisplay} • Week ${day.info.railWeek} • Period ${day.info.period}\n${day.isPayday ? '💰 PAYDAY! 💰' : day.moon.emoji + ' ' + day.moon.name}\n☀️ ${day.dayLight.dayLengthFormatted} (${day.dayLight.sunrise}–${day.dayLight.sunset})`)}
                       onMouseLeave={hideTooltip}
                       className={`group p-1.5 min-h-[75px] transition-all border-r border-white/5 last:border-0 cursor-pointer ${
                         day.isCurrentMonth ? 'bg-white/[0.02]' : ''
