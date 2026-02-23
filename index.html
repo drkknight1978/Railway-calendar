@@ -83,7 +83,7 @@
     </div>
 
     <!-- Icon Components -->
-    <script type="text/babel">
+    <script type="text/babel" data-type="module">
         // Import React hooks and make them globally available
         const { useState, useMemo, useCallback, useEffect } = React;
         window.useState = useState;
@@ -230,10 +230,24 @@
     <script type="text/babel" src="railway-calendar.jsx"></script>
 
     <!-- Mount the application -->
-    <script type="text/babel">
-        // Wait for DOM to be ready
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<RailwayCalendar />);
+    <script type="text/babel" data-type="module">
+        // Ensure component only mounts once
+        if (!window.__RAILWAY_CALENDAR_MOUNTED__) {
+            window.__RAILWAY_CALENDAR_MOUNTED__ = true;
+
+            // Wait for RailwayCalendar to be defined
+            const mountApp = () => {
+                if (typeof window.RailwayCalendar !== 'undefined') {
+                    const root = ReactDOM.createRoot(document.getElementById('root'));
+                    root.render(<window.RailwayCalendar />);
+                } else {
+                    setTimeout(mountApp, 100);
+                }
+            };
+
+            // Initial attempt with delay to allow Babel to process JSX
+            setTimeout(mountApp, 100);
+        }
     </script>
 
     <!-- Analytics placeholder (add your analytics code here if needed) -->
